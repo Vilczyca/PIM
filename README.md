@@ -87,7 +87,7 @@ Prezentuje zależności pomiędzy warstwą logiki a komponentami widoku.
 2. Przejdź do katalogu projektu:
 
    ```bash
-   cd pim
+   cd PIM/bDay
    ```
 3. Zainstaluj zależności:
 
