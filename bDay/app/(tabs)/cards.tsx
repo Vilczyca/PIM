@@ -9,6 +9,7 @@ import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { useColor } from "@/hooks/use-colors";
 import { AddBdayButton } from "@/components/ui/add-bday-button";
+import {signInWithPopup, auth, provider} from "@/constants/firebase";
 
 type CardItem = {
   id: string;
@@ -21,6 +22,14 @@ const DATA: CardItem[] = [
   { id: "2", name: "Michał Nowak", birthday: "1998-11-10" },
   { id: "3", name: "Kasia Zielińska", birthday: "2000-02-14" },
 ];
+
+const handleGoogleLogin = async () => {
+    try {
+        await signInWithPopup(auth, provider);
+    } catch (err:any) {
+        alert("Błąd logowania Google: " + err.message);
+    }
+};
 
 export default function CardsScreen() {
   const router = useRouter();
@@ -42,6 +51,12 @@ export default function CardsScreen() {
       <Text style={[styles.date, { color: textColor }]}>
         🎂 {item.birthday}
       </Text>
+        <button
+            className="mt-4 custom-button bg-blue-700 text-white px-4 py-2 rounded"
+            onClick={handleGoogleLogin}
+        >
+            Zaloguj przez Google
+        </button>
     </TouchableOpacity>
   );
 
