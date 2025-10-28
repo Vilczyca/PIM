@@ -14,7 +14,7 @@ type CardItem = {
 };
 
 const DATA: CardItem[] = [
-  { id: "1", name: "Julia Kowalska", birthday: "2001-05-20" },
+  { id: "1", name: "Julia Kowalska", birthday: "2001-10-28" },
   { id: "2", name: "Michał Nowak", birthday: "1998-10-27" },
   { id: "3", name: "Kasia Zielińska", birthday: "2000-02-14" },
 ];
@@ -24,7 +24,7 @@ export default function CalendarScreen() {
   const bgColor = useColor("background");
   const cardColor = useColor("card");
   const textColor = useColor("text");
-  const currentDayColor = useColor("buttonColor");
+  const currentDayColor = useColor("calendarToday");
 
   const today = new Date().toISOString().split("T")[0];
   const [selectedDate, setSelectedDate] = useState<string | null>(null);

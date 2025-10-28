@@ -21,8 +21,8 @@ export function BdayCard({
 
 const defaultAvatar = "https://www.gravatar.com/avatar/?d=mp";  
 const cardColor = useColor("card");
-const cardColorBday = useColor("buttonColor");
- 
+const cardColorBday = useColor("cardBday");
+const textColor = useColor("text")
 let daysLeft: number | null = null;
   if (showDaysLeft) {
     const today = new Date();
@@ -43,7 +43,7 @@ let daysLeft: number | null = null;
 
   return (
     <TouchableOpacity
-      style={[styles.card, { backgroundColor: isBirthdayToday ? cardColorBday : cardColor}]}
+      style={[styles.card, { backgroundColor: isBirthdayToday ? cardColorBday : cardColor, borderColor : cardColorBday }]}
       onPress={onPress}
     >
       <View style={styles.row}>
@@ -52,11 +52,11 @@ let daysLeft: number | null = null;
           style={styles.avatar}
         />
         <View style={{ marginLeft: 12 }}>
-          <Text style={styles.name}>
-            {isBirthdayToday ? "🎉 " : "🎂 "} {name}
+          <Text style={[styles.name, { color: textColor }]}>
+            {name} {isBirthdayToday ? "🎉 " : ""} 
           </Text>
-          <Text style={styles.date}>{birthday}</Text>
-          {daysLeft !== null && <Text style={styles.daysLeft}>{daysLeft} days left</Text>}
+          <Text style={styles.date}>{birthday.slice(5)}</Text>
+          {daysLeft !== null && <Text style={styles.daysLeft}>{daysLeft===0 ? "Today": daysLeft+ " days left"}</Text>}
         </View>
       </View>
     </TouchableOpacity>
@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 12,
     elevation: 2,
+    borderWidth:2
   },
   row: {
     flexDirection: "row",

@@ -33,6 +33,8 @@ export const Colors = {
     buttonTextColor: onPrimaryLight,
 
     card: accentLight,
+    cardBday: tintColorLight,
+    calendarToday:  tintColorLight
 
   },
   dark: {
@@ -48,6 +50,8 @@ export const Colors = {
     buttonTextColor: onPrimaryDark,
 
     card: accentDark,
+    cardBday: primaryDark,
+    calendarToday: primaryDark
   },
 };
 
