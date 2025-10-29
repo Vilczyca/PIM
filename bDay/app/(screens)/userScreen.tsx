@@ -6,11 +6,18 @@ import {
     TextInput,
     ScrollView,
 } from "react-native";
-import { useColors } from "@/hooks/use-colors"; //dopasuj ścieżkę
+import { useColors } from "@/hooks/use-colors";
 import { Fonts } from "@/constants/theme";
+import { useNavigation } from "@react-navigation/native";
 
 export default function UserModal() {
     const colors = useColors();
+    const navigation = useNavigation();
+
+    //handle logout -> przejscie do loginScreen i wyczyszczenie stosu
+    const onLogout = () => {
+        navigation.reset({ index: 0, routes: [{ name: "loginScreen" as never }] });
+    };
 
     const name = "Person 1";
     const birthday = "October 10";

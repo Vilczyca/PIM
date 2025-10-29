@@ -26,6 +26,17 @@ export default function ModalsLayout() {
               <Ionicons name="arrow-back" size={24} color={tintColor} />
             </TouchableOpacity>
           ),
+            headerRight: () => (
+                <TouchableOpacity
+                    onPress={() => {
+                        //logout: wyczysc nawigacje do loginu
+                        router.replace("./loginScreen");
+                    }}
+                    style={{ marginRight: 16 }}
+                >
+                    <Feather name="log-out" size={22} color={tintColor} />
+                </TouchableOpacity>
+            ),
         }}
       />
 
@@ -53,6 +64,15 @@ export default function ModalsLayout() {
         //   ),
         // }}
       />
+
+    <Stack.Screen
+        name="loginScreen"
+        options={{
+            title: "",
+            headerLeft: () => null,
+        }}
+    />
+
     </Stack>
   );
 }
