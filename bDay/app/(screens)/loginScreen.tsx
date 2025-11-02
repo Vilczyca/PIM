@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useColors } from "@/hooks/use-colors";
 import { useRouter } from "expo-router";
+import { FontAwesome } from "@expo/vector-icons";
 
 export default function LoginScreen() {
     const [email, setEmail] = useState("");
@@ -40,6 +41,12 @@ export default function LoginScreen() {
         }
     };
 
+    const onGoogleLogin = () => {
+        console.log("Google sign-in clicked");
+        router.replace("/cards");
+        // tu mozna dodac logike logowania przez Google
+    };
+
     return (
         <KeyboardAvoidingView
             style={[styles.container, { backgroundColor: colors.background }]}
@@ -53,24 +60,34 @@ export default function LoginScreen() {
                     <TextInput
                         style={[
                             styles.input,
-                            { borderColor: colors.card, color: colors.text, backgroundColor: colors.background },
+                            {
+                                borderColor: colors.tint,
+                                color: colors.text,
+                                backgroundColor: colors.background,
+                            },
                         ]}
                         placeholder="xyz@gmail.com"
-                        placeholderTextColor="#b5b5b5"
+                        placeholderTextColor="#a5a5a5"
                         autoCapitalize="none"
                         keyboardType="email-address"
                         value={email}
                         onChangeText={setEmail}
                     />
 
-                    <Text style={[styles.label, { color: colors.text, marginTop: 18 }]}>Password</Text>
+                    <Text style={[styles.label, { color: colors.text, marginTop: 18 }]}>
+                        Password
+                    </Text>
                     <TextInput
                         style={[
                             styles.input,
-                            { borderColor: colors.card, color: colors.text, backgroundColor: colors.background },
+                            {
+                                borderColor: colors.tint,
+                                color: colors.text,
+                                backgroundColor: colors.background,
+                            },
                         ]}
                         placeholder="••••••••••"
-                        placeholderTextColor="#b5b5b5"
+                        placeholderTextColor="#a5a5a5"
                         secureTextEntry
                         value={password}
                         onChangeText={setPassword}
@@ -80,38 +97,86 @@ export default function LoginScreen() {
 
             {error ? <Text style={[styles.errorText, { color: "red" }]}>{error}</Text> : null}
 
+            {/* przycisk LOGIN */}
             <TouchableOpacity
-                style={[styles.button, { backgroundColor: colors.buttonColor }]}
+                style={[styles.button, { backgroundColor: colors.tint }]}
                 onPress={onLogin}
                 activeOpacity={0.9}
             >
-                <Text style={[styles.buttonText, { color: colors.buttonTextColor }]}>LOGIN</Text>
+                <Text style={[styles.buttonText, { color: colors.background }]}>LOGIN</Text>
+            </TouchableOpacity>
+
+            {/* przycisk Sign in with Google */}
+            <TouchableOpacity
+                style={[styles.googleButton, { borderColor: colors.tint }]}
+                onPress={onGoogleLogin}
+                activeOpacity={0.85}
+            >
+                <FontAwesome name="google" size={22} color="#DB4437" style={{ marginRight: 10 }} />
+                <Text style={[styles.googleText, { color: colors.background }]}>
+                    Sign in with Google
+                </Text>
             </TouchableOpacity>
         </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, paddingHorizontal: 24 },
-    title: { fontSize: 36, fontWeight: "800", textAlign: "center", marginTop: 48 },
-    form: { marginTop: 28 },
+    container: {
+        flex: 1,
+        paddingHorizontal: 24,
+        justifyContent: "center",
+    },
+    title: {
+        fontSize: 36,
+        fontWeight: "800",
+        textAlign: "center",
+        marginBottom: 24,
+    },
+    form: { marginBottom: 32 },
     label: { fontSize: 16, fontWeight: "600", marginBottom: 8, marginLeft: 4 },
-    input: { height: 56, borderWidth: 1, borderRadius: 12, paddingHorizontal: 16, fontSize: 16 },
-    errorText: { marginTop: 12, fontSize: 14, fontWeight: "600", textAlign: "center" },
+    input: {
+        height: 56,
+        borderWidth: 2, // wyraźna ramka
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        fontSize: 16,
+        shadowColor: "#000",
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
+    },
+    errorText: {
+        marginBottom: 10,
+        fontSize: 14,
+        fontWeight: "600",
+        textAlign: "center",
+    },
     button: {
-        position: "absolute",
-        left: 24,
-        right: 24,
-        bottom: 24,
         height: 64,
         borderRadius: 14,
         alignItems: "center",
         justifyContent: "center",
+        marginBottom: 20,
         shadowColor: "#000",
-        shadowOpacity: 0.15,
-        shadowRadius: 12,
+        shadowOpacity: 0.25,
+        shadowRadius: 10,
         shadowOffset: { width: 0, height: 6 },
-        elevation: 6,
+        elevation: 8,
     },
     buttonText: { fontSize: 18, fontWeight: "800", letterSpacing: 1 },
+    googleButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        height: 56,
+        borderWidth: 2,
+        borderRadius: 12,
+        backgroundColor: "#fff",
+        shadowColor: "#000",
+        shadowOpacity: 0.15,
+        shadowRadius: 6,
+        elevation: 4,
+    },
+    googleText: { fontSize: 16, fontWeight: "700" },
 });
