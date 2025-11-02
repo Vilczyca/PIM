@@ -49,6 +49,7 @@ export default function ModalsLayout() {
         options={{
             title: "",
             headerLeft: () => null,
+            headerRight: () => null,
         }}
     />
 
