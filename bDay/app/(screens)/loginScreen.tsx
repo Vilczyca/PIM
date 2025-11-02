@@ -33,7 +33,7 @@ export default function LoginScreen() {
     const onLogin = () => {
         if (email === "admin@example.com" && password === "1234") {
             setError("");
-            router.replace("/userScreen");
+            router.replace("/cards");
         } else {
             setError("Niepoprawny login lub hasło");
             shake();

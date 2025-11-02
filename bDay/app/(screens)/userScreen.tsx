@@ -1,112 +1,154 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     View,
     Text,
     StyleSheet,
     TextInput,
     ScrollView,
+    TouchableOpacity,
 } from "react-native";
+import { Stack, useRouter } from "expo-router";
+import { Ionicons, Feather } from "@expo/vector-icons";
 import { useColors } from "@/hooks/use-colors";
 import { Fonts } from "@/constants/theme";
-import { useNavigation } from "@react-navigation/native";
+import { Avatar } from "@/components/ui/avatar";
 
-export default function UserModal() {
+
+export default function UserScreen() {
     const colors = useColors();
-    const navigation = useNavigation();
+    const router = useRouter();
+    const [isEditing, setIsEditing] = useState(false);
+    const [name, setName] = useState("Person 1");
+    const [birthday, setBirthday] = useState("October 10");
+    const tintColor = colors.tint;
 
-    //handle logout -> przejscie do loginScreen i wyczyszczenie stosu
     const onLogout = () => {
-        navigation.reset({ index: 0, routes: [{ name: "loginScreen" as never }] });
+        router.replace("./loginScreen");
     };
 
-    const name = "Person 1";
-    const birthday = "October 10";
+    const onSave = () => {
+        setIsEditing(false);
+        console.log("saved:", name, birthday);
+    };
+
+    const disabled = !isEditing;
 
     return (
-        <View style={[styles.root, { backgroundColor: colors.background }]}>
-            <ScrollView contentContainerStyle={styles.container}>
-                <Text
-                    style={[
-                        styles.title,
-                        { color: colors.text, fontFamily: Fonts.sans },
-                    ]}
-                >
-                    &lt;NAME&gt; DETAILS
-                </Text>
+        <>
+            <Stack.Screen
+                options={{
+                    title: "Profil użytkownika",
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={() => router.back()} style={{ marginLeft: 16 }}>
+                            <Ionicons name="arrow-back" size={24} color={tintColor} />
+                        </TouchableOpacity>
+                    ),
+                    headerRight: () => (
+                        <TouchableOpacity
+                            onPress={() => setIsEditing(!isEditing)}
+                            style={{ marginRight: 16 }}
+                        >
+                            {isEditing ? (
+                                <Feather name="x" size={22} color={tintColor} />
+                            ) : (
+                                <Feather name="edit-3" size={22} color={tintColor} />
+                            )}
+                        </TouchableOpacity>
+                    ),
+                }}
+            />
 
-                <View style={[styles.avatar, { backgroundColor: colors.tint }]}>
+            <View style={[styles.root, { backgroundColor: colors.background }]}>
+                <ScrollView contentContainerStyle={styles.container}>
                     <Text
                         style={[
-                            styles.avatarText,
-                            { color: colors.background, fontFamily: Fonts.sans },
-                        ]}
-                    >
-                        IMG
-                    </Text>
-                </View>
-
-                <View style={styles.form}>
-                    <Text
-                        style={[
-                            styles.label,
+                            styles.title,
                             { color: colors.text, fontFamily: Fonts.sans },
                         ]}
                     >
-                        Name
+                        &lt;NAME&gt; DETAILS
                     </Text>
-                    <TextInput
-                        style={[
-                            styles.input,
-                            {
-                                color: colors.text,
-                                borderColor: colors.card,
-                                fontFamily: Fonts.sans,
-                            },
-                        ]}
-                        value={name}
-                        editable={false}
-                    />
 
-                    <Text
-                        style={[
-                            styles.label,
-                            {
-                                color: colors.text,
-                                marginTop: 18,
-                                fontFamily: Fonts.sans,
-                            },
-                        ]}
+                    <Avatar name="Person 1" size={200} style={{ marginVertical: 24 }} />
+
+                    {/* //blok: pola sa nieklikalne gdy nie edycja */}
+                    <View
+                        style={[styles.form, disabled && { opacity: 0.6 }]}
+                        pointerEvents={disabled ? "none" : "auto"}
+                        accessibilityState={{ disabled }}
                     >
-                        Birthday date
+                        <Text
+                            style={[
+                                styles.label,
+                                { color: colors.text, fontFamily: Fonts.sans },
+                            ]}
+                        >
+                            Name
+                        </Text>
+                        <TextInput
+                            style={[
+                                styles.input,
+                                {
+                                    color: colors.text,
+                                    borderColor: colors.card,
+                                    fontFamily: Fonts.sans,
+                                },
+                            ]}
+                            value={name}
+                            editable={isEditing}
+                            selectTextOnFocus={isEditing}
+                            onChangeText={setName}
+                        />
+
+                        <Text
+                            style={[
+                                styles.label,
+                                { color: colors.text, marginTop: 18, fontFamily: Fonts.sans },
+                            ]}
+                        >
+                            Birthday date
+                        </Text>
+                        <TextInput
+                            style={[
+                                styles.input,
+                                {
+                                    color: colors.text,
+                                    borderColor: colors.card,
+                                    fontFamily: Fonts.sans,
+                                },
+                            ]}
+                            value={birthday}
+                            editable={isEditing}
+                            selectTextOnFocus={isEditing}
+                            onChangeText={setBirthday}
+                        />
+                    </View>
+                </ScrollView>
+
+                <TouchableOpacity
+                    style={[styles.bottomBtn, { backgroundColor: colors.tint }]}
+                    onPress={isEditing ? onSave : onLogout}
+                >
+                    <Text
+                        style={{
+                            color: colors.background,
+                            fontSize: 16,
+                            fontWeight: "700",
+                            fontFamily: Fonts.sans,
+                        }}
+                    >
+                        {isEditing ? "Zapisz" : "Wyloguj"}
                     </Text>
-                    <TextInput
-                        style={[
-                            styles.input,
-                            {
-                                color: colors.text,
-                                borderColor: colors.card,
-                                fontFamily: Fonts.sans,
-                            },
-                        ]}
-                        value={birthday}
-                        editable={false}
-                    />
-                </View>
-            </ScrollView>
-        </View>
+                </TouchableOpacity>
+            </View>
+        </>
     );
 }
 
 const styles = StyleSheet.create({
     root: { flex: 1 },
-    topBar: {
-        height: 64,
-        justifyContent: "center",
-    },
-    iconBtn: { position: "absolute", left: 16, top: 16, padding: 8 },
-    iconBtnRight: { position: "absolute", right: 16, top: 16, padding: 8 },
-    container: { alignItems: "center", paddingHorizontal: 20, paddingBottom: 40 },
-    title: { fontSize: 22, fontWeight: "800", marginTop: 12 },
+    container: { alignItems: "center", paddingHorizontal: 20, paddingBottom: 100 },
+    title: { fontSize: 22, fontWeight: "800", marginTop: 64 },
     avatar: {
         width: 200,
         height: 200,
@@ -129,5 +171,14 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         paddingHorizontal: 16,
         fontSize: 16,
+    },
+    bottomBtn: {
+        position: "absolute",
+        bottom: 20,
+        left: 20,
+        right: 20,
+        paddingVertical: 14,
+        borderRadius: 12,
+        alignItems: "center",
     },
 });
