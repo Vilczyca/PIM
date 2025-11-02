@@ -13,13 +13,17 @@ import { useColors } from "@/hooks/use-colors";
 import { Fonts } from "@/constants/theme";
 import { Avatar } from "@/components/ui/avatar";
 
-
 export default function UserScreen() {
     const colors = useColors();
     const router = useRouter();
     const [isEditing, setIsEditing] = useState(false);
+
     const [name, setName] = useState("Person 1");
-    const [birthday, setBirthday] = useState("October 10");
+    const [birthday, setBirthday] = useState("07-11-2025");
+
+    const [tempName, setTempName] = useState(name);
+    const [tempBirthday, setTempBirthday] = useState(birthday);
+
     const tintColor = colors.tint;
 
     const onLogout = () => {
@@ -27,11 +31,41 @@ export default function UserScreen() {
     };
 
     const onSave = () => {
+        setName(tempName);
+        setBirthday(tempBirthday);
         setIsEditing(false);
-        console.log("saved:", name, birthday);
+        console.log("saved:", tempName, tempBirthday);
+    };
+
+    const onCancelEdit = () => {
+        setTempName(name);
+        setTempBirthday(birthday);
+        setIsEditing(false);
+    };
+
+    const startEdit = () => {
+        setTempName(name);
+        setTempBirthday(birthday);
+        setIsEditing(true);
     };
 
     const disabled = !isEditing;
+
+    // formatowanie daty na DD-MM-RRRR
+    const handleBirthdayChange = (text: string) => {
+        let digits = text.replace(/\D/g, ""); // usun wszystko poza cyframi
+        if (digits.length > 8) digits = digits.slice(0, 8);
+
+        // dodaj myślniki po 2 i 4 znakach
+        let formatted = digits;
+        if (digits.length > 4) {
+            formatted = `${digits.slice(0, 2)}-${digits.slice(2, 4)}-${digits.slice(4)}`;
+        } else if (digits.length > 2) {
+            formatted = `${digits.slice(0, 2)}-${digits.slice(2)}`;
+        }
+
+        setTempBirthday(formatted);
+    };
 
     return (
         <>
@@ -45,7 +79,7 @@ export default function UserScreen() {
                     ),
                     headerRight: () => (
                         <TouchableOpacity
-                            onPress={() => setIsEditing(!isEditing)}
+                            onPress={() => (isEditing ? onCancelEdit() : startEdit())}
                             style={{ marginRight: 16 }}
                         >
                             {isEditing ? (
@@ -66,12 +100,11 @@ export default function UserScreen() {
                             { color: colors.text, fontFamily: Fonts.sans },
                         ]}
                     >
-                        &lt;NAME&gt; DETAILS
+                        {name.toUpperCase()} DETAILS
                     </Text>
 
-                    <Avatar name="Person 1" size={200} style={{ marginVertical: 24 }} />
+                    <Avatar name={name} size={200} style={{ marginVertical: 24 }} />
 
-                    {/* //blok: pola sa nieklikalne gdy nie edycja */}
                     <View
                         style={[styles.form, disabled && { opacity: 0.6 }]}
                         pointerEvents={disabled ? "none" : "auto"}
@@ -94,10 +127,10 @@ export default function UserScreen() {
                                     fontFamily: Fonts.sans,
                                 },
                             ]}
-                            value={name}
+                            value={tempName}
                             editable={isEditing}
                             selectTextOnFocus={isEditing}
-                            onChangeText={setName}
+                            onChangeText={setTempName}
                         />
 
                         <Text
@@ -117,10 +150,13 @@ export default function UserScreen() {
                                     fontFamily: Fonts.sans,
                                 },
                             ]}
-                            value={birthday}
+                            keyboardType="numeric"
+                            placeholder="DD-MM-RRRR"
+                            maxLength={10}
+                            value={tempBirthday}
                             editable={isEditing}
                             selectTextOnFocus={isEditing}
-                            onChangeText={setBirthday}
+                            onChangeText={handleBirthdayChange}
                         />
                     </View>
                 </ScrollView>
@@ -149,20 +185,6 @@ const styles = StyleSheet.create({
     root: { flex: 1 },
     container: { alignItems: "center", paddingHorizontal: 20, paddingBottom: 100 },
     title: { fontSize: 22, fontWeight: "800", marginTop: 64 },
-    avatar: {
-        width: 200,
-        height: 200,
-        borderRadius: 100,
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: 24,
-        marginBottom: 24,
-        shadowColor: "#000",
-        shadowOpacity: 0.08,
-        shadowRadius: 8,
-        elevation: 2,
-    },
-    avatarText: { fontSize: 24, fontWeight: "800" },
     form: { alignSelf: "stretch" },
     label: { fontSize: 14, fontWeight: "700", marginBottom: 8 },
     input: {

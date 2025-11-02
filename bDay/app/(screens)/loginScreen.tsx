@@ -108,12 +108,12 @@ export default function LoginScreen() {
 
             {/* przycisk Sign in with Google */}
             <TouchableOpacity
-                style={[styles.googleButton, { borderColor: colors.tint }]}
+                style={[styles.button, { backgroundColor: colors.tint}]}
                 onPress={onGoogleLogin}
                 activeOpacity={0.85}
             >
                 <FontAwesome name="google" size={22} color="#DB4437" style={{ marginRight: 10 }} />
-                <Text style={[styles.googleText, { color: colors.background }]}>
+                <Text style={[styles.buttonText, { color: colors.background }]}>
                     Sign in with Google
                 </Text>
             </TouchableOpacity>
@@ -153,6 +153,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
     },
     button: {
+        flexDirection: "row",
         height: 64,
         borderRadius: 14,
         alignItems: "center",
@@ -164,19 +165,5 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 6 },
         elevation: 8,
     },
-    buttonText: { fontSize: 18, fontWeight: "800", letterSpacing: 1 },
-    googleButton: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        height: 56,
-        borderWidth: 2,
-        borderRadius: 12,
-        backgroundColor: "#fff",
-        shadowColor: "#000",
-        shadowOpacity: 0.15,
-        shadowRadius: 6,
-        elevation: 4,
-    },
-    googleText: { fontSize: 16, fontWeight: "700" },
+    buttonText: { fontSize: 18, fontWeight: "800", letterSpacing: 1 }
 });
