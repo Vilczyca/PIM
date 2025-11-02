@@ -1,119 +1,190 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     View,
     Text,
     StyleSheet,
     TextInput,
     ScrollView,
+    TouchableOpacity,
 } from "react-native";
-import { useColors } from "@/hooks/use-colors"; //dopasuj ścieżkę
+import { Stack, useRouter } from "expo-router";
+import { Ionicons, Feather } from "@expo/vector-icons";
+import { useColors } from "@/hooks/use-colors";
 import { Fonts } from "@/constants/theme";
+import { Avatar } from "@/components/ui/avatar";
 
-export default function UserModal() {
+export default function UserScreen() {
     const colors = useColors();
+    const router = useRouter();
+    const [isEditing, setIsEditing] = useState(false);
 
-    const name = "Person 1";
-    const birthday = "October 10";
+    const [name, setName] = useState("Person 1");
+    const [birthday, setBirthday] = useState("07-11-2025");
+
+    const [tempName, setTempName] = useState(name);
+    const [tempBirthday, setTempBirthday] = useState(birthday);
+
+    const tintColor = colors.tint;
+
+    const onLogout = () => {
+        router.replace("./loginScreen");
+    };
+
+    const onSave = () => {
+        setName(tempName);
+        setBirthday(tempBirthday);
+        setIsEditing(false);
+        console.log("saved:", tempName, tempBirthday);
+    };
+
+    const onCancelEdit = () => {
+        setTempName(name);
+        setTempBirthday(birthday);
+        setIsEditing(false);
+    };
+
+    const startEdit = () => {
+        setTempName(name);
+        setTempBirthday(birthday);
+        setIsEditing(true);
+    };
+
+    const disabled = !isEditing;
+
+    // formatowanie daty na DD-MM-RRRR
+    const handleBirthdayChange = (text: string) => {
+        let digits = text.replace(/\D/g, ""); // usun wszystko poza cyframi
+        if (digits.length > 8) digits = digits.slice(0, 8);
+
+        // dodaj myślniki po 2 i 4 znakach
+        let formatted = digits;
+        if (digits.length > 4) {
+            formatted = `${digits.slice(0, 2)}-${digits.slice(2, 4)}-${digits.slice(4)}`;
+        } else if (digits.length > 2) {
+            formatted = `${digits.slice(0, 2)}-${digits.slice(2)}`;
+        }
+
+        setTempBirthday(formatted);
+    };
 
     return (
-        <View style={[styles.root, { backgroundColor: colors.background }]}>
-            <ScrollView contentContainerStyle={styles.container}>
-                <Text
-                    style={[
-                        styles.title,
-                        { color: colors.text, fontFamily: Fonts.sans },
-                    ]}
-                >
-                    &lt;NAME&gt; DETAILS
-                </Text>
+        <>
+            <Stack.Screen
+                options={{
+                    title: "Profil użytkownika",
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={() => router.back()} style={{ marginLeft: 16 }}>
+                            <Ionicons name="arrow-back" size={24} color={tintColor} />
+                        </TouchableOpacity>
+                    ),
+                    headerRight: () => (
+                        <TouchableOpacity
+                            onPress={() => (isEditing ? onCancelEdit() : startEdit())}
+                            style={{ marginRight: 16 }}
+                        >
+                            {isEditing ? (
+                                <Feather name="x" size={22} color={tintColor} />
+                            ) : (
+                                <Feather name="edit-3" size={22} color={tintColor} />
+                            )}
+                        </TouchableOpacity>
+                    ),
+                }}
+            />
 
-                <View style={[styles.avatar, { backgroundColor: colors.tint }]}>
+            <View style={[styles.root, { backgroundColor: colors.background }]}>
+                <ScrollView contentContainerStyle={styles.container}>
                     <Text
                         style={[
-                            styles.avatarText,
-                            { color: colors.background, fontFamily: Fonts.sans },
-                        ]}
-                    >
-                        IMG
-                    </Text>
-                </View>
-
-                <View style={styles.form}>
-                    <Text
-                        style={[
-                            styles.label,
+                            styles.title,
                             { color: colors.text, fontFamily: Fonts.sans },
                         ]}
                     >
-                        Name
+                        {name.toUpperCase()} DETAILS
                     </Text>
-                    <TextInput
-                        style={[
-                            styles.input,
-                            {
-                                color: colors.text,
-                                borderColor: colors.card,
-                                fontFamily: Fonts.sans,
-                            },
-                        ]}
-                        value={name}
-                        editable={false}
-                    />
 
-                    <Text
-                        style={[
-                            styles.label,
-                            {
-                                color: colors.text,
-                                marginTop: 18,
-                                fontFamily: Fonts.sans,
-                            },
-                        ]}
+                    <Avatar name={name} size={200} style={{ marginVertical: 24 }} />
+
+                    <View
+                        style={[styles.form, disabled && { opacity: 0.6 }]}
+                        pointerEvents={disabled ? "none" : "auto"}
+                        accessibilityState={{ disabled }}
                     >
-                        Birthday date
+                        <Text
+                            style={[
+                                styles.label,
+                                { color: colors.text, fontFamily: Fonts.sans },
+                            ]}
+                        >
+                            Name
+                        </Text>
+                        <TextInput
+                            style={[
+                                styles.input,
+                                {
+                                    color: colors.text,
+                                    borderColor: colors.card,
+                                    fontFamily: Fonts.sans,
+                                },
+                            ]}
+                            value={tempName}
+                            editable={isEditing}
+                            selectTextOnFocus={isEditing}
+                            onChangeText={setTempName}
+                        />
+
+                        <Text
+                            style={[
+                                styles.label,
+                                { color: colors.text, marginTop: 18, fontFamily: Fonts.sans },
+                            ]}
+                        >
+                            Birthday date
+                        </Text>
+                        <TextInput
+                            style={[
+                                styles.input,
+                                {
+                                    color: colors.text,
+                                    borderColor: colors.card,
+                                    fontFamily: Fonts.sans,
+                                },
+                            ]}
+                            keyboardType="numeric"
+                            placeholder="DD-MM-RRRR"
+                            maxLength={10}
+                            value={tempBirthday}
+                            editable={isEditing}
+                            selectTextOnFocus={isEditing}
+                            onChangeText={handleBirthdayChange}
+                        />
+                    </View>
+                </ScrollView>
+
+                <TouchableOpacity
+                    style={[styles.bottomBtn, { backgroundColor: colors.tint }]}
+                    onPress={isEditing ? onSave : onLogout}
+                >
+                    <Text
+                        style={{
+                            color: colors.background,
+                            fontSize: 16,
+                            fontWeight: "700",
+                            fontFamily: Fonts.sans,
+                        }}
+                    >
+                        {isEditing ? "Zapisz" : "Wyloguj"}
                     </Text>
-                    <TextInput
-                        style={[
-                            styles.input,
-                            {
-                                color: colors.text,
-                                borderColor: colors.card,
-                                fontFamily: Fonts.sans,
-                            },
-                        ]}
-                        value={birthday}
-                        editable={false}
-                    />
-                </View>
-            </ScrollView>
-        </View>
+                </TouchableOpacity>
+            </View>
+        </>
     );
 }
 
 const styles = StyleSheet.create({
     root: { flex: 1 },
-    topBar: {
-        height: 64,
-        justifyContent: "center",
-    },
-    iconBtn: { position: "absolute", left: 16, top: 16, padding: 8 },
-    iconBtnRight: { position: "absolute", right: 16, top: 16, padding: 8 },
-    container: { alignItems: "center", paddingHorizontal: 20, paddingBottom: 40 },
-    title: { fontSize: 22, fontWeight: "800", marginTop: 12 },
-    avatar: {
-        width: 200,
-        height: 200,
-        borderRadius: 100,
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: 24,
-        marginBottom: 24,
-        shadowColor: "#000",
-        shadowOpacity: 0.08,
-        shadowRadius: 8,
-        elevation: 2,
-    },
-    avatarText: { fontSize: 24, fontWeight: "800" },
+    container: { alignItems: "center", paddingHorizontal: 20, paddingBottom: 100 },
+    title: { fontSize: 22, fontWeight: "800", marginTop: 64 },
     form: { alignSelf: "stretch" },
     label: { fontSize: 14, fontWeight: "700", marginBottom: 8 },
     input: {
@@ -122,5 +193,14 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         paddingHorizontal: 16,
         fontSize: 16,
+    },
+    bottomBtn: {
+        position: "absolute",
+        bottom: 20,
+        left: 20,
+        right: 20,
+        paddingVertical: 14,
+        borderRadius: 12,
+        alignItems: "center",
     },
 });
