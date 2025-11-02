@@ -77,7 +77,7 @@ export default function DetailsScreen() {
   useLayoutEffect(() => {
     const isEditing = mode === "edit";
     navigation.setOptions({
-      title: isEditing ? "Edit details" : "Details",
+      title: isEditing ? "Edit" : "Details",
       headerRight: () => (
         <TouchableOpacity
           onPress={() => setMode(isEditing ? "view" : "edit")}

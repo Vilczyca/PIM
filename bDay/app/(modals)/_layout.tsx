@@ -20,7 +20,7 @@ export default function ModalsLayout() {
           headerShown: true,
           animation: "slide_from_bottom",
 
-          headerTitle: "Dodaj urodziny",
+          headerTitle: "Add birthday",
           headerRight: () => (
             <TouchableOpacity
               onPress={() => router.back()}

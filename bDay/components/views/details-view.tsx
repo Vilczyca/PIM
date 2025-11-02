@@ -400,7 +400,7 @@ export function DetailsView({
               fontFamily: Fonts.sans,
             }}
           >
-            Zapisz
+            Save
           </Text>
         </TouchableOpacity>
       )}
