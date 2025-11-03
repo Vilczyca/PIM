@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import {GoogleAuthProvider, signInWithCredential, getRedirectResult,signInWithRedirect, getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
 
 const firebaseConfig = {
     apiKey: process.env.EXPO_PUBLIC_API_KEY,
@@ -9,11 +9,12 @@ const firebaseConfig = {
     storageBucket: process.env.EXPO_PUBLIC_STORAGE_BUCKET,
     messagingSenderId: process.env.EXPO_PUBLIC_MESSAGING_SENDER_ID,
     appId: process.env.EXPO_PUBLIC_APP_ID,
-    measurementId: process.env.EXPO_PUBLIC_MEASUREMENT_ID
+    measurementId: process.env.EXPO_PUBLIC_MEASUREMENT_ID,
 };
+
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const provider = new GoogleAuthProvider();
-export { signInWithPopup,createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut };
+export { signInWithCredential, signInWithPopup,createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut , signInWithRedirect,getRedirectResult, GoogleAuthProvider};

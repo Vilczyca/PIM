@@ -9,7 +9,6 @@ import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { useColor } from "@/hooks/use-colors";
 import { AddBdayButton } from "@/components/ui/add-bday-button";
-import {signInWithPopup, auth, provider} from "@/constants/firebase";
 
 type CardItem = {
   id: string;

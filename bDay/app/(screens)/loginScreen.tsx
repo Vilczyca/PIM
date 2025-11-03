@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, {useState, useRef, useEffect} from "react";
 import {
     View,
     Text,
@@ -12,6 +12,8 @@ import {
 import { useColors } from "@/hooks/use-colors";
 import { useRouter } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
+import { auth,signInWithEmailAndPassword, provider, signInWithRedirect, getRedirectResult } from "@/constants/firebase";
+import { useGoogleLogin } from '@/hooks/use-google-login';
 
 export default function LoginScreen() {
     const [email, setEmail] = useState("");
@@ -31,20 +33,27 @@ export default function LoginScreen() {
         ]).start();
     };
 
-    const onLogin = () => {
-        if (email === "admin@example.com" && password === "1234") {
+    const onLogin = async () => {
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
             setError("");
             router.replace("/cards");
-        } else {
+        } catch (err:any) {
             setError("Niepoprawny login lub hasło");
             shake();
         }
     };
 
-    const onGoogleLogin = () => {
-        console.log("Google sign-in clicked");
-        router.replace("/cards");
-        // tu mozna dodac logike logowania przez Google
+    const { promptAsync, isLoading } = useGoogleLogin();
+
+    const onGoogleLogin = async () => {
+        try {
+            setError("");
+            await promptAsync();
+        } catch (err: any) {
+            setError("Błąd logowania Google: " + err.message);
+            shake();
+        }
     };
 
     return (
@@ -108,9 +117,10 @@ export default function LoginScreen() {
 
             {/* przycisk Sign in with Google */}
             <TouchableOpacity
-                style={[styles.button, { backgroundColor: colors.tint}]}
+                style={[styles.button, { backgroundColor: colors.tint }]}
                 onPress={onGoogleLogin}
                 activeOpacity={0.85}
+                disabled={isLoading}
             >
                 <FontAwesome name="google" size={22} color="#DB4437" style={{ marginRight: 10 }} />
                 <Text style={[styles.buttonText, { color: colors.background }]}>
