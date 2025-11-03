@@ -23,14 +23,6 @@ const DATA: CardItem[] = [
   { id: "3", name: "Kasia Zielińska", birthday: "2000-02-14" },
 ];
 
-const handleGoogleLogin = async () => {
-    try {
-        await signInWithPopup(auth, provider);
-    } catch (err:any) {
-        alert("Błąd logowania Google: " + err.message);
-    }
-};
-
 export default function CardsScreen() {
   const router = useRouter();
   const bgColor = useColor("background");
@@ -51,12 +43,6 @@ export default function CardsScreen() {
       <Text style={[styles.date, { color: textColor }]}>
         🎂 {item.birthday}
       </Text>
-        <button
-            className="mt-4 custom-button bg-blue-700 text-white px-4 py-2 rounded"
-            onClick={handleGoogleLogin}
-        >
-            Zaloguj przez Google
-        </button>
     </TouchableOpacity>
   );
 
