@@ -13,7 +13,7 @@ type CardItem = {
 };
 
 const DATA: CardItem[] = [
-  { id: "1", name: "Julia Kowalska", birthday: "2001-10-28" },
+  { id: "1", name: "Julia Kowalska", birthday: "2001-10-29" },
   { id: "2", name: "Michał Nowak", birthday: "1998-10-27" },
   { id: "3", name: "Kasia Zielińska", birthday: "2000-02-14" },
 ];

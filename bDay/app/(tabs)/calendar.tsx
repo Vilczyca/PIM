@@ -14,7 +14,7 @@ type CardItem = {
 };
 
 const DATA: CardItem[] = [
-  { id: "1", name: "Julia Kowalska", birthday: "2001-10-28" },
+  { id: "1", name: "Julia Kowalska", birthday: "2001-11-01" },
   { id: "2", name: "Michał Nowak", birthday: "1998-10-27" },
   { id: "3", name: "Kasia Zielińska", birthday: "2000-02-14" },
 ];
@@ -87,20 +87,34 @@ export default function CalendarScreen() {
     );
     setFilteredData(todayBdays);
   }, [today]);
+const daysUntilBirthday = (birthday: string): number => {
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const [, month, day] = birthday.split("-").map(Number);
 
+  
+  const todayMidnight = new Date(currentYear, today.getMonth(), today.getDate());
+  const thisYearBday = new Date(currentYear, month - 1, day);
+
+  if (thisYearBday < todayMidnight) thisYearBday.setFullYear(currentYear + 1);
+
+ 
+
+  return Math.ceil((thisYearBday.getTime() - todayMidnight.getTime()) / (1000 * 60 * 60 * 24))
+}
 
   const renderItem = ({ item }: { item: CardItem }) => {
     const itemMD = item.birthday.slice(5);
     const todayMD = today.slice(5);
     const selectedMD = selectedDate ? selectedDate.slice(5) : null;
-    const isBirthdayToday = itemMD === todayMD || itemMD === selectedMD;
+    
 
     return (
       <BdayCard
         id={item.id}
         name={item.name}
         birthday={item.birthday}
-        isBirthdayToday={isBirthdayToday}
+        isBirthdayToday={daysUntilBirthday(item.birthday) === 0}
         showDaysLeft={!selectedDate}
         onPress={() =>
           router.push({
@@ -125,7 +139,13 @@ export default function CalendarScreen() {
           markedDates={getMarkedDates}
         />
       </View>
-
+      <View style={styles.infoBox}>
+        <Text style={styles.infoText}>
+          {filteredData.length > 0
+            ? `🎉 There are ${filteredData.length} birthdays today!`
+            : "No birthdays today 😢"}
+        </Text>
+      </View>
       <FlatList
         data={filteredData}
         renderItem={renderItem}
@@ -160,5 +180,19 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 16,
     marginTop: 20
+  },
+  infoBox: {
+    padding: 12,
+    marginHorizontal: 16,
+    marginVertical: 8,
+    borderRadius: 12,
+    backgroundColor: "#f5f5f5",
+    alignItems: "center",
+    elevation: 2,
+  },
+  infoText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#333",
   },
 });
