@@ -209,14 +209,12 @@ export function DetailsView({
 
     Wszystkiego najlepszego z okazji urodzin! 🎉 Pozdrowienia z aplikacji \"bDAY!\" :)
 
-    Pozdrawiam,
-    ${name}`
+    Pozdrawiam`
       : `Cześć,
 
     Chciałem/Chciałam właśnie pozdrowić Cię przez aplikację \"bDAY!\" :) Mam nadzieję, że wszystko u Ciebie dobrze.
 
-    Pozdrawiam,
-    ${name}`;
+    Pozdrawiam`;
 
     Linking.openURL(
       `mailto:${email}?subject=${encodeURIComponent(
