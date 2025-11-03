@@ -16,17 +16,7 @@ export default function ModalsLayout() {
     >
       <Stack.Screen
         name="userScreen"
-        options={{
-          title: "Profil użytkownika",
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.back()}
-              style={{ marginLeft: 16 }}
-            >
-              <Ionicons name="arrow-back" size={24} color={tintColor} />
-            </TouchableOpacity>
-          ),
-        }}
+          // options jest ustawione w userScreen bo jest dynamiczne
       />
 
       <Stack.Screen
@@ -53,6 +43,16 @@ export default function ModalsLayout() {
         //   ),
         // }}
       />
+
+    <Stack.Screen
+        name="loginScreen"
+        options={{
+            title: "",
+            headerLeft: () => null,
+            headerRight: () => null,
+        }}
+    />
+
     </Stack>
   );
 }
