@@ -13,6 +13,8 @@ import { useColor } from "@/hooks/use-colors";
 import { DetailsView } from "@/components/views/details-view";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Fonts } from "@/constants/theme";
+import {insertMyHomie} from "@/components/database";
+import {CalendarRecord} from "@/constants/types";
 
 export default function AddDetailsModal() {
   const router = useRouter();
@@ -71,8 +73,15 @@ export default function AddDetailsModal() {
     });
   }, [navigation, router, tint]);
 
-  const handleSaveAdd = (data: { name: string; birthday: string }) => {
-    router.back();
+  const handleSaveAdd = (data: CalendarRecord) => {
+      const record = {
+          name: data.name,
+          date: data.date,
+          phone: data.phone,
+          email: data.email,
+      };
+      insertMyHomie(record);
+      router.back();
   };
 
   const onSelectItem = (item: any) => {

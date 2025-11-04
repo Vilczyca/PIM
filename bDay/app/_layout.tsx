@@ -10,6 +10,7 @@ import { useColors } from "@/hooks/use-colors";
 import Toast from "react-native-toast-message";
 import { NetworkProvider } from "@/context/NetworkContext";
 import { OfflineIcon } from "@/components/offline-icon";
+import {FirebaseDataProvider} from "@/context/FirebaseDataContex";
 
 export default function RootLayout() {
   const colors = useColors();
@@ -19,6 +20,7 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <NetworkProvider>
+            <FirebaseDataProvider>
             <OfflineIcon />
               <Stack>
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -30,6 +32,7 @@ export default function RootLayout() {
               </Stack>
               <StatusBar style="auto" />
               <Toast />
+            </FirebaseDataProvider>
         </NetworkProvider>
     </ThemeProvider>
   );

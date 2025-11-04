@@ -14,6 +14,7 @@ import { useRouter } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import { auth,signInWithEmailAndPassword, provider, signInWithRedirect, getRedirectResult } from "@/constants/firebase";
 import { useGoogleLogin } from '@/hooks/use-google-login';
+import {selectAllMyHomie} from "@/components/database";
 
 export default function LoginScreen() {
     const [email, setEmail] = useState("");
@@ -126,6 +127,16 @@ export default function LoginScreen() {
                 <Text style={[styles.buttonText, { color: colors.background }]}>
                     Sign in with Google
                 </Text>
+            </TouchableOpacity>
+            {/*TODO: usunąć gdy logowanie będzie w pelni działać*/}
+            {/* SKIP*/}
+            <TouchableOpacity
+                style={[styles.button, { backgroundColor: colors.tint }]}
+                onPress={() => {router.replace("/cards");
+                    selectAllMyHomie();}}
+                activeOpacity={0.9}
+            >
+                <Text style={[styles.buttonText, { color: "red" }]}>SKIP</Text>
             </TouchableOpacity>
         </KeyboardAvoidingView>
     );
