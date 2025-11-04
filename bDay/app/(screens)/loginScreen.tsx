@@ -9,12 +9,10 @@ import {
     Platform,
     Animated,
     Image,
-    StatusBar,
 } from "react-native";
 
 import { useColors } from "@/hooks/use-colors";
 import { useRouter } from "expo-router";
-import { FontAwesome } from "@expo/vector-icons";
 
 export default function LoginScreen() {
     const [email, setEmail] = useState("");
