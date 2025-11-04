@@ -8,7 +8,10 @@ import {
     KeyboardAvoidingView,
     Platform,
     Animated,
+    Image,
+    StatusBar,
 } from "react-native";
+
 import { useColors } from "@/hooks/use-colors";
 import { useRouter } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
@@ -108,15 +111,17 @@ export default function LoginScreen() {
 
             {/* przycisk Sign in with Google */}
             <TouchableOpacity
-                style={[styles.button, { backgroundColor: colors.tint}]}
+                style={[styles.button, { backgroundColor: colors.tint }]}
                 onPress={onGoogleLogin}
                 activeOpacity={0.85}
             >
-                <FontAwesome name="google" size={22} color="#DB4437" style={{ marginRight: 10 }} />
-                <Text style={[styles.buttonText, { color: colors.background }]}>
-                    Sign in with Google
-                </Text>
+                <Image
+                    source={require("@/assets/images/google-logo.png")}
+                    style={{ width: 36, height: 36, marginRight: 10 }}
+                />
+                <Text style={styles.buttonText}>Sign in with Google</Text>
             </TouchableOpacity>
+
         </KeyboardAvoidingView>
     );
 }
@@ -136,15 +141,11 @@ const styles = StyleSheet.create({
     form: { marginBottom: 32 },
     label: { fontSize: 16, fontWeight: "600", marginBottom: 8, marginLeft: 4 },
     input: {
-        height: 56,
-        borderWidth: 2, // wyraźna ramka
+        height: 48,
+        borderWidth: 1,
         borderRadius: 12,
         paddingHorizontal: 16,
         fontSize: 16,
-        shadowColor: "#000",
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 2,
     },
     errorText: {
         marginBottom: 10,
@@ -155,15 +156,19 @@ const styles = StyleSheet.create({
     button: {
         flexDirection: "row",
         height: 64,
-        borderRadius: 14,
-        alignItems: "center",
         justifyContent: "center",
         marginBottom: 20,
-        shadowColor: "#000",
         shadowOpacity: 0.25,
         shadowRadius: 10,
         shadowOffset: { width: 0, height: 6 },
         elevation: 8,
+        position: "absolute",
+        bottom: 20,
+        left: 20,
+        right: 20,
+        paddingVertical: 14,
+        borderRadius: 12,
+        alignItems: "center",
     },
     buttonText: { fontSize: 18, fontWeight: "800", letterSpacing: 1 }
 });

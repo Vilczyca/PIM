@@ -11,7 +11,8 @@ interface AvatarProps {
 
 export const Avatar: React.FC<AvatarProps> = ({ name, size = 100, style }) => {
     const colors = useColors();
-    const letter = name?.[0]?.toUpperCase() ?? "?";
+    const trimmed = name?.trim();
+    const letter = trimmed?.[0]?.toUpperCase() ?? "?";
 
     return (
         <View
