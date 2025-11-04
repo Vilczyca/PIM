@@ -1,6 +1,5 @@
 import { AddBdayButton } from "@/components/ui/add-bday-button";
-import {signInWithPopup, auth, provider} from "@/constants/firebase";
-import { BdayCard } from "@/components/ui/BdayCard"; // Twój komponent
+import { BdayCard } from "@/components/ui/BdayCard";
 import { useColor } from "@/hooks/use-colors";
 import { useRouter } from "expo-router";
 import { useMemo } from "react";
