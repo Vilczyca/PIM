@@ -15,6 +15,7 @@ import { SearchBar } from "@/components/ui/search-bar";
 import { Fonts } from "@/constants/theme";
 import {insertMyHomie} from "@/components/database";
 import {CalendarRecord} from "@/constants/types";
+import {useFirebaseData} from "@/context/FirebaseDataContex";
 
 export default function AddDetailsModal() {
   const router = useRouter();
@@ -25,36 +26,8 @@ export default function AddDetailsModal() {
   const card = useColor("card");
   const [activeTab, setActiveTab] = useState<"add" | "search">("add");
   const [selectedItem, setSelectedItem] = useState<any>(null);
-
-  // TODO: change with real data
-  const MOCK_DATA = [
-    {
-      id: 1,
-      name: "John Doe",
-      email: "john@example.com",
-      birthday: "01-01-1990",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      email: "jane@workmail.com",
-      birthday: "05-05-1995",
-    },
-    {
-      id: 3,
-      name: "Adam Kowalski",
-      email: "adam@gmail.com",
-      birthday: "23-08-2001",
-    },
-    {
-      id: 4,
-      name: "Maria Nowak",
-      email: "maria@wp.pl",
-      birthday: "10-03-1998",
-    },
-  ];
-
-  const [results, setResults] = useState(MOCK_DATA);
+  const { calendarData, usersData,loading, refresh } = useFirebaseData();
+  const [results, setResults] = useState(usersData);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -81,6 +54,7 @@ export default function AddDetailsModal() {
           email: data.email,
       };
       insertMyHomie(record);
+      refresh();
       router.back();
   };
 
@@ -90,10 +64,10 @@ export default function AddDetailsModal() {
     );
   };
 
-  //TODO: Real save
   const onSave = () => {
     if (!selectedItem) return;
-    console.log("✅ Selected person saved:", selectedItem);
+    insertMyHomie(selectedItem);
+    refresh();
     router.back();
   };
 
@@ -108,7 +82,7 @@ export default function AddDetailsModal() {
   const renderSearchTab = () => (
     <View style={{ flex: 1 }}>
       <SearchBar
-        data={MOCK_DATA}
+        data={usersData}
         keysToSearch={["name", "email", "birthday"]}
         onResultsChange={handleResultsChange}
         placeholder="Search by name, email or birthday..."
@@ -144,7 +118,7 @@ export default function AddDetailsModal() {
                   { color: textColor, opacity: 0.7 },
                 ]}
               >
-                {item.birthday}
+                {item.date}
               </Text>
             </TouchableOpacity>
           );

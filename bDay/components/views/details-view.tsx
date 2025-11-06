@@ -160,7 +160,7 @@ export function DetailsView({
     const data = {
       name: tmpName,
       date: tmpBirthday,
-      phone: parseInt(tmpPhone),
+     ...(isNaN(parseInt(tmpPhone)) ? {}: {phone : parseInt(tmpPhone)}),
       email: tmpEmail,
     };
     if (mode === "add") {

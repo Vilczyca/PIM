@@ -8,6 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 import { DetailsView } from "@/components/views/details-view";
 import {useFirebaseData} from "@/context/FirebaseDataContex";
 import {CalendarRecord} from "@/constants/types";
+import {updateMyHomie} from "@/components/database";
 
 export default function DetailsScreen() {
   const { id } = useLocalSearchParams();
@@ -24,7 +25,7 @@ export default function DetailsScreen() {
   const navigation = useNavigation();
 
 
-  //const { data, loading, refresh } = useFirebaseData();
+  //const { calendarData, usersData, loading, refresh } = useFirebaseData();
   const { calendarData, refresh } = useFirebaseData();
 
   useEffect(() => {
@@ -92,10 +93,16 @@ export default function DetailsScreen() {
   }, [mode, navigation, tintColor]);
 
   const handleSaveEdit = (data: CalendarRecord) => {
-    //todo:update api/store
-    setInitialData(data); //update lokalnego widoku
-    setMode("view");
+      if( initialData) {
+          data.id = initialData.id;
+          data.uid = initialData.uid;
+      }
+      updateMyHomie(data);
+      refresh();
+      setInitialData(data); //update lokalnego widoku
+      setMode("view");
   };
+
 
   if (parsedId != null && loading) {
     return (

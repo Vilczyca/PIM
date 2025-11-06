@@ -7,7 +7,7 @@ export function useAppStart() {
     useEffect(() => {
         async function prepare() {
             try {
-                // TODO: Loading database
+                // TODO: Loading database. Offline?
                 await new Promise(resolve => setTimeout(resolve, 5000));
             } catch (e) {
                 console.warn('Błąd ładowania aplikacji:', e);
