@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, {useState, useRef, useEffect} from "react";
 import {
     View,
     Text,
@@ -13,6 +13,10 @@ import {
 
 import { useColors } from "@/hooks/use-colors";
 import { useRouter } from "expo-router";
+import { FontAwesome } from "@expo/vector-icons";
+import { auth,signInWithEmailAndPassword, provider, signInWithRedirect, getRedirectResult } from "@/constants/firebase";
+import { useGoogleLogin } from '@/hooks/use-google-login';
+import {selectAllMyHomie} from "@/components/database";
 
 export default function LoginScreen() {
     const [email, setEmail] = useState("");
@@ -32,20 +36,27 @@ export default function LoginScreen() {
         ]).start();
     };
 
-    const onLogin = () => {
-        if (email === "admin@example.com" && password === "1234") {
+    const onLogin = async () => {
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
             setError("");
             router.replace("/cards");
-        } else {
+        } catch (err:any) {
             setError("Niepoprawny login lub hasło");
             shake();
         }
     };
 
-    const onGoogleLogin = () => {
-        console.log("Google sign-in clicked");
-        router.replace("/cards");
-        // tu mozna dodac logike logowania przez Google
+    const { promptAsync, isLoading } = useGoogleLogin();
+
+    const onGoogleLogin = async () => {
+        try {
+            setError("");
+            await promptAsync();
+        } catch (err: any) {
+            setError("Błąd logowania Google: " + err.message);
+            shake();
+        }
     };
 
     return (
@@ -112,6 +123,7 @@ export default function LoginScreen() {
                 style={[styles.button, { backgroundColor: colors.tint }]}
                 onPress={onGoogleLogin}
                 activeOpacity={0.85}
+                disabled={isLoading}
             >
                 <Image
                     source={require("@/assets/images/google-logo.png")}
@@ -119,7 +131,16 @@ export default function LoginScreen() {
                 />
                 <Text style={styles.buttonText}>Sign in with Google</Text>
             </TouchableOpacity>
-
+            {/*TODO: usunąć gdy logowanie będzie w pelni działać*/}
+            {/* SKIP*/}
+            <TouchableOpacity
+                style={[styles.button, { backgroundColor: colors.tint }]}
+                onPress={() => {router.replace("/cards");
+                    selectAllMyHomie();}}
+                activeOpacity={0.9}
+            >
+                <Text style={[styles.buttonText, { color: "red" }]}>SKIP</Text>
+            </TouchableOpacity>
         </KeyboardAvoidingView>
     );
 }

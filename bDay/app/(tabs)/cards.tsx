@@ -6,30 +6,20 @@ import {
   StyleSheet,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { Feather } from "@expo/vector-icons";
 import { useColor } from "@/hooks/use-colors";
 import { AddBdayButton } from "@/components/ui/add-bday-button";
-import {signInWithPopup, auth, provider} from "@/constants/firebase";
+import {CalendarRecord} from "@/constants/types";
+import {useFirebaseData} from "@/context/FirebaseDataContex";
 
-type CardItem = {
-  id: string;
-  name: string;
-  birthday: string;
-};
-
-const DATA: CardItem[] = [
-  { id: "1", name: "Julia Kowalska", birthday: "2001-05-20" },
-  { id: "2", name: "Michał Nowak", birthday: "1998-11-10" },
-  { id: "3", name: "Kasia Zielińska", birthday: "2000-02-14" },
-];
 
 export default function CardsScreen() {
   const router = useRouter();
   const bgColor = useColor("background");
   const cardColor = useColor("card");
   const textColor = useColor("text");
+  const { calendarData, loading, refresh } = useFirebaseData();
 
-  const renderItem = ({ item }: { item: CardItem }) => (
+  const renderItem = ({ item }: { item: CalendarRecord }) => (
     <TouchableOpacity
       style={[styles.card, { backgroundColor: cardColor }]}
       onPress={() =>
@@ -41,7 +31,7 @@ export default function CardsScreen() {
     >
       <Text style={[styles.name, { color: textColor }]}>{item.name}</Text>
       <Text style={[styles.date, { color: textColor }]}>
-        🎂 {item.birthday}
+        🎂 {item.date}
       </Text>
     </TouchableOpacity>
   );
@@ -49,7 +39,7 @@ export default function CardsScreen() {
   return (
     <View style={[styles.container, { backgroundColor: bgColor }]}>
       <FlatList
-        data={DATA}
+        data={calendarData}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: 16 }}
