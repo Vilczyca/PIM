@@ -46,7 +46,6 @@ export function DetailsView({
   const placeholderOpt = "Optional";
   const placeholderReq = "Required";
 
-  console.log(initialData)
   //saved state
   const [name, setName] = useState(initialData?.name ?? "Person 1");
   const [birthday, setBirthday] = useState(

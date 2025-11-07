@@ -20,7 +20,6 @@ export const selectAllMyHomie = async () =>{
             name: doc.data().name,
             date: doc.data().date ? formatted(doc.data().date.toDate()) : null,
         }));
-        console.log(data);
         return data;
     } catch (e:any){
         return null;
@@ -57,7 +56,6 @@ export const selectRegisteredUsers = async () =>{
             name: doc.data().name,
             date: doc.data().date ? formatted(doc.data().date.toDate()) : null,
         }));
-        console.log(data);
         return data;
     } catch (e:any){
         return null;
