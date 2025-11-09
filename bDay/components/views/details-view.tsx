@@ -1,34 +1,32 @@
+import { Avatar } from "@/components/ui/avatar";
+import { Spinner } from "@/components/ui/Spinner";
+import { Fonts } from "@/constants/theme";
+import { useColor } from "@/hooks/use-colors";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
+  Alert,
+  Linking,
+  ScrollView,
   StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
-  Linking,
-  Alert,
+  View,
 } from "react-native";
-import { useColor } from "@/hooks/use-colors";
-import { Feather, Ionicons } from "@expo/vector-icons";
-import { Fonts } from "@/constants/theme";
-import { Avatar } from "@/components/ui/avatar";
+
+
+import { CalendarRecord } from "@/constants/types";
 
 type Mode = "add" | "edit" | "view";
-type PersonData = {
-  name: string;
-  birthday: string;
-  phone?: string;
-  email?: string;
-};
 
 interface DetailsViewProps {
-  id?: number;
+  id?: string;
   mode?: Mode;
   setMode?: (m: Mode) => void;
-  onSaveAdd?: (data: PersonData) => void;
-  onSaveEdit?: (data: PersonData) => void;
-  initialData?: PersonData;
+  onSaveAdd?: (data: CalendarRecord) => void;
+  onSaveEdit?: (data: CalendarRecord) => void;
+  initialData?: CalendarRecord;
   errorText?: string;
 }
 
@@ -54,9 +52,9 @@ export function DetailsView({
   //saved state
   const [name, setName] = useState(initialData?.name ?? "Person 1");
   const [birthday, setBirthday] = useState(
-    initialData?.birthday ?? "07-11-2025"
+    initialData?.date ?? "07-11-2025"
   );
-  const [phone, setPhone] = useState(initialData?.phone ?? "");
+  const [phone, setPhone] = useState(initialData?.phone?.toString() ?? "");
   const [email, setEmail] = useState(initialData?.email ?? "");
 
   //temp state
@@ -116,13 +114,13 @@ export function DetailsView({
   useEffect(() => {
     if (!initialData) return;
     setName(initialData.name ?? "");
-    setBirthday(initialData.birthday ?? "");
-    setPhone(initialData.phone ?? "");
+    setBirthday(initialData.date ?? "");
+    setPhone(initialData.phone?.toString() ?? "");
     setEmail(initialData.email ?? "");
     if (mode === "view") {
       setTmpName(initialData.name ?? "");
-      setTmpBirthday(initialData.birthday ?? "");
-      setTmpPhone(initialData.phone ?? "");
+      setTmpBirthday(initialData.date ?? "");
+      setTmpPhone(initialData.phone?.toString() ?? "");
       setTmpEmail(initialData.email ?? "");
     }
   }, [initialData]); //eslint-disable-line
@@ -146,12 +144,12 @@ export function DetailsView({
     }
   }, [mode, name, birthday, phone, email]);
 
-  //format dd-mm-rrrr
+
   const onBirthdayChange = (text: string) => {
-    //usun niecyfry
+  
     let d = text.replace(/\D/g, "");
     if (d.length > 8) d = d.slice(0, 8);
-    //wstaw '-'
+  
     let f = d;
     if (d.length > 4) f = `${d.slice(0, 2)}-${d.slice(2, 4)}-${d.slice(4)}`;
     else if (d.length > 2) f = `${d.slice(0, 2)}-${d.slice(2)}`;
@@ -163,8 +161,8 @@ export function DetailsView({
 
     const data = {
       name: tmpName,
-      birthday: tmpBirthday,
-      phone: tmpPhone,
+      date: tmpBirthday,
+     ...(isNaN(parseInt(tmpPhone)) ? {}: {phone : parseInt(tmpPhone)}),
       email: tmpEmail,
     };
     if (mode === "add") {
@@ -179,8 +177,7 @@ export function DetailsView({
     }
   };
 
-  //actions
-
+  
   const onCall = () => {
     if (!phone) return Alert.alert("Brak numeru telefonu");
     Linking.openURL(`tel:${phone}`);
@@ -310,31 +307,13 @@ export function DetailsView({
             placeholder="Name"
           />
 
-          <Text
-            style={[
-              styles.label,
-              { color: colors.text, marginTop: 18, fontFamily: Fonts.sans },
-            ]}
-          >
-            Birthday date (DD-MM-RRRR)
-          </Text>
-          <TextInput
-            style={[
-              styles.input,
-              {
-                color: colors.text,
-                borderColor: colors.card,
-                fontFamily: Fonts.sans,
-              },
-            ]}
-            editable={isEditing}
-            keyboardType="numeric"
-            maxLength={10}
-            placeholder={"DD-MM-RRRR"}
-            value={tmpBirthday}
-            onChangeText={onBirthdayChange}
-          />
 
+             <View style={{ height: 200, justifyContent: "center" }}>
+                <Spinner
+                  value={tmpBirthday}
+                  onChange={onBirthdayChange}
+                />
+              </View>
           <Text
             style={[
               styles.label,

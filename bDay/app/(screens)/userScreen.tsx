@@ -1,17 +1,18 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
-import { Stack, useRouter } from "expo-router";
-import { Ionicons, Feather } from "@expo/vector-icons";
-import { useColors } from "@/hooks/use-colors";
-import { Fonts } from "@/constants/theme";
 import { Avatar } from "@/components/ui/avatar";
+import { Fonts } from "@/constants/theme";
+import { useColors } from "@/hooks/use-colors";
+import { Feather, Ionicons } from "@expo/vector-icons";
+import { Stack, useRouter } from "expo-router";
+import React, { useState } from "react";
+import { ScrollView } from "react-native";
+
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from "react-native";
 
 export default function UserScreen() {
   const colors = useColors();
@@ -19,7 +20,7 @@ export default function UserScreen() {
   const [isEditing, setIsEditing] = useState(false);
 
   const [name, setName] = useState("Person 1");
-  const [birthday, setBirthday] = useState("07-11-2025");
+const [birthday, setBirthday] = useState("01-01-2025");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
 
@@ -61,12 +62,12 @@ export default function UserScreen() {
 
   const disabled = !isEditing;
 
-  // formatowanie daty na DD-MM-RRRR
+  
   const handleBirthdayChange = (text: string) => {
-    let digits = text.replace(/\D/g, ""); // usun wszystko poza cyframi
+    let digits = text.replace(/\D/g, ""); 
     if (digits.length > 8) digits = digits.slice(0, 8);
 
-    // dodaj myślniki po 2 i 4 znakach
+  
     let formatted = digits;
     if (digits.length > 4) {
       formatted = `${digits.slice(0, 2)}-${digits.slice(2, 4)}-${digits.slice(
@@ -78,6 +79,7 @@ export default function UserScreen() {
 
     setTempBirthday(formatted);
   };
+
 
   return (
     <>
@@ -108,7 +110,10 @@ export default function UserScreen() {
       />
 
       <View style={[styles.root, { backgroundColor: colors.background }]}>
-        <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView nestedScrollEnabled contentContainerStyle={styles.container
+        
+      }>
+
           <Text
             style={[
               styles.title,
@@ -148,7 +153,22 @@ export default function UserScreen() {
               onChangeText={setTempName}
             />
 
-            <Text
+            {/* <Text
+              style={[
+                styles.label,
+                { color: colors.text, marginTop: 18, fontFamily: Fonts.sans },
+              ]}
+            >
+              Birthday date
+            </Text>
+           
+             <View style={{ height: 200, justifyContent: "center" }}>
+    <Spinner
+      value={tempBirthday}
+      onChange={handleBirthdayChange}
+    />
+  </View> */}
+ <Text
               style={[
                 styles.label,
                 { color: colors.text, marginTop: 18, fontFamily: Fonts.sans },
@@ -173,7 +193,6 @@ export default function UserScreen() {
               selectTextOnFocus={isEditing}
               onChangeText={handleBirthdayChange}
             />
-
             <Text
               style={[
                 styles.label,
