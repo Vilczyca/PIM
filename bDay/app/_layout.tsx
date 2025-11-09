@@ -1,3 +1,5 @@
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useColors } from "@/hooks/use-colors";
 import {
   DarkTheme,
   DefaultTheme,
@@ -5,12 +7,13 @@ import {
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useColorScheme } from "@/hooks/use-color-scheme";
-import { useColors } from "@/hooks/use-colors";
 import Toast from "react-native-toast-message";
 import { NetworkProvider } from "@/context/NetworkContext";
 import { OfflineIcon } from "@/components/offline-icon";
 import {FirebaseDataProvider} from "@/context/FirebaseDataContex";
+
+
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function RootLayout() {
   const colors = useColors();

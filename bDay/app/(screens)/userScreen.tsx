@@ -1,17 +1,19 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
-import { Stack, useRouter } from "expo-router";
-import { Ionicons, Feather } from "@expo/vector-icons";
-import { useColors } from "@/hooks/use-colors";
-import { Fonts } from "@/constants/theme";
 import { Avatar } from "@/components/ui/avatar";
+import { Spinner } from "@/components/ui/Spinner";
+import { Fonts } from "@/constants/theme";
+import { useColors } from "@/hooks/use-colors";
+import { Feather, Ionicons } from "@expo/vector-icons";
+import { Stack, useRouter } from "expo-router";
+import React, { useState } from "react";
+import { ScrollView } from "react-native";
+
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from "react-native";
 
 export default function UserScreen() {
   const colors = useColors();
@@ -19,7 +21,7 @@ export default function UserScreen() {
   const [isEditing, setIsEditing] = useState(false);
 
   const [name, setName] = useState("Person 1");
-  const [birthday, setBirthday] = useState("07-11-2025");
+const [birthday, setBirthday] = useState("01-01-2025");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
 
@@ -61,7 +63,7 @@ export default function UserScreen() {
 
   const disabled = !isEditing;
 
-  // formatowanie daty na DD-MM-RRRR
+  // // formatowanie daty na DD-MM-RRRR
   const handleBirthdayChange = (text: string) => {
     let digits = text.replace(/\D/g, ""); // usun wszystko poza cyframi
     if (digits.length > 8) digits = digits.slice(0, 8);
@@ -78,6 +80,16 @@ export default function UserScreen() {
 
     setTempBirthday(formatted);
   };
+//   const handleBirthdayChange = (date: Date) => {
+//   const yyyy = date.getFullYear();
+//   const mm = String(date.getMonth() + 1).padStart(2, "0");
+//   const dd = String(date.getDate()).padStart(2, "0");
+
+//   const formatted = `${yyyy}-${mm}-${dd}`;
+//  setTempBirthday(formatted);  
+ 
+// };
+
 
   return (
     <>
@@ -108,7 +120,10 @@ export default function UserScreen() {
       />
 
       <View style={[styles.root, { backgroundColor: colors.background }]}>
-        <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView nestedScrollEnabled contentContainerStyle={styles.container
+        
+      }>
+
           <Text
             style={[
               styles.title,
@@ -156,7 +171,7 @@ export default function UserScreen() {
             >
               Birthday date
             </Text>
-            <TextInput
+            {/* <TextInput
               style={[
                 styles.input,
                 {
@@ -172,7 +187,13 @@ export default function UserScreen() {
               editable={isEditing}
               selectTextOnFocus={isEditing}
               onChangeText={handleBirthdayChange}
-            />
+            /> */}
+             <View style={{ height: 200, justifyContent: "center" }}>
+    <Spinner
+      value={tempBirthday}
+      onChange={handleBirthdayChange}
+    />
+  </View>
 
             <Text
               style={[

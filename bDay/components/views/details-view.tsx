@@ -1,13 +1,18 @@
+import { Avatar } from "@/components/ui/avatar";
+import { Spinner } from "@/components/ui/Spinner";
+import { Fonts } from "@/constants/theme";
+import { useColor } from "@/hooks/use-colors";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
+  Alert,
+  Linking,
+  ScrollView,
   StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
-  Linking,
-  Alert,
+  View,
 } from "react-native";
 import { useColor } from "@/hooks/use-colors";
 import { Feather, Ionicons } from "@expo/vector-icons";
@@ -307,7 +312,7 @@ export function DetailsView({
             placeholder="Name"
           />
 
-          <Text
+          {/* <Text
             style={[
               styles.label,
               { color: colors.text, marginTop: 18, fontFamily: Fonts.sans },
@@ -330,8 +335,13 @@ export function DetailsView({
             placeholder={"DD-MM-RRRR"}
             value={tmpBirthday}
             onChangeText={onBirthdayChange}
-          />
-
+          /> */}
+             <View style={{ height: 200, justifyContent: "center" }}>
+                <Spinner
+                  value={tmpBirthday}
+                  onChange={onBirthdayChange}
+                />
+              </View>
           <Text
             style={[
               styles.label,
