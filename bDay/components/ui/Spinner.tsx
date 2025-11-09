@@ -119,7 +119,7 @@ const handleMomentumEnd = (
     
   );
 
-  console.log('Selected date:', `${year}-${month + 1}-${day}`);
+  
   
   return (
     <View style={styles.wrapper}>

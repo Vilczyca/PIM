@@ -1,6 +1,6 @@
-import { db, auth } from "@/constants/firebase";
-import {collection, getDocs, addDoc, Timestamp, updateDoc, doc, deleteField} from "firebase/firestore";
-import {CalendarRecord} from "@/constants/types";
+import { auth, db } from "@/constants/firebase";
+import { CalendarRecord } from "@/constants/types";
+import { addDoc, collection, deleteField, doc, getDocs, Timestamp, updateDoc } from "firebase/firestore";
 
 
 const formatted = (date:Date) => {
@@ -27,24 +27,27 @@ export const selectAllMyHomie = async () =>{
 }
 
 export const insertMyHomie = async (record:CalendarRecord) => {
-    const preperedData = prepareRecord(record);
-    if (preperedData==null)
-        return;
+    const preperedData = prepareRecord(record, false); 
+    if (!preperedData) return;
+
     const user = auth.currentUser;
+
     await addDoc(collection(db, "calendar_data"), {
         ...preperedData,
-        uid: (user) ? user.uid : "0",
+        uid: user ? user.uid : "0",
     });
 }
 
+
 export const updateMyHomie = async (record:CalendarRecord) => {
-    const preperedData = prepareRecord(record);
-    if (preperedData==null)
-        return;
-    await updateDoc(doc(db, "calendar_data",record.id), {
+    const preperedData = prepareRecord(record, true); 
+    if (!preperedData) return;
+
+    await updateDoc(doc(db, "calendar_data", record.id), {
         ...preperedData,
     });
 }
+
 
 
 export const selectRegisteredUsers = async () =>{
@@ -62,17 +65,29 @@ export const selectRegisteredUsers = async () =>{
     }
 }
 
-const prepareRecord = (record:CalendarRecord) => {
-    if (!record || !record.date)
-        return null;
+const prepareRecord = (record: CalendarRecord, isUpdate = false) => {
+    if (!record || !record.date) return null;
+
     const {id, date, phone, email, ...recordCopy} = record;
+
     const [day, month, year] = record.date.split("-").map(Number);
-    recordCopy.date= Timestamp.fromDate(new Date(year, month - 1, day))
-    if (record.phone != null) {
-        recordCopy.phone = isNaN(record.phone) ? deleteField() : record.phone;
+    recordCopy.date = Timestamp.fromDate(new Date(year, month - 1, day))
+
+    if (phone != null) {
+        if (!isUpdate || !isNaN(phone)) {
+            recordCopy.phone = phone;
+        } else if (isUpdate && isNaN(phone)) {
+            recordCopy.phone = deleteField();
+        }
     }
-    if (record.email != null) {
-        recordCopy.email = (record.email === "") ? deleteField() : record.email;
+
+    if (email != null) {
+        if (!isUpdate || email !== "") {
+            recordCopy.email = email;
+        } else if (isUpdate && email === "") {
+            recordCopy.email = deleteField();
+        }
     }
+
     return recordCopy;
 }

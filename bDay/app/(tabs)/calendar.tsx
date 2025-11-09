@@ -86,9 +86,7 @@ const handleDayPress = (day: any) => {
       const personDM = getDayMonth(person.date, "dd-mm-yyyy");
       return personDM.day === todayDM.day && personDM.month === todayDM.month;
     });
- birthdayPeople.forEach((p) => {
-      console.log(`${p.name} has ${daysUntilBirthday(p.date!)} days left`);
-    });
+ 
 
     setFilteredData(birthdayPeople);
     return;
