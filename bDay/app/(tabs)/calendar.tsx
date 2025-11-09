@@ -1,6 +1,9 @@
 import { AddBdayButton } from "@/components/ui/add-bday-button";
 import { BdayCard } from "@/components/ui/BdayCard";
 import { useColor } from "@/hooks/use-colors";
+import {useFirebaseData} from "@/context/FirebaseDataContex";
+import {CalendarRecord} from "@/constants/types";
+
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";

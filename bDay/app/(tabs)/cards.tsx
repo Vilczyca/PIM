@@ -1,3 +1,16 @@
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { useColor } from "@/hooks/use-colors";
+import { AddBdayButton } from "@/components/ui/add-bday-button";
+import {CalendarRecord} from "@/constants/types";
+import {useFirebaseData} from "@/context/FirebaseDataContex";
+
 import { AddBdayButton } from "@/components/ui/add-bday-button";
 import { BdayCard } from "@/components/ui/BdayCard";
 import { useColor } from "@/hooks/use-colors";
@@ -21,6 +34,26 @@ const DATA: CardItem[] = [
 export default function CardsScreen() {
   const router = useRouter();
   const bgColor = useColor("background");
+  const cardColor = useColor("card");
+  const textColor = useColor("text");
+  const { calendarData, loading, refresh } = useFirebaseData();
+
+  const renderItem = ({ item }: { item: CalendarRecord }) => (
+    <TouchableOpacity
+      style={[styles.card, { backgroundColor: cardColor }]}
+      onPress={() =>
+        router.push({
+          pathname: "/(screens)/detailsScreen",
+          params: { id: item.id, mode: "view" },
+        })
+      }
+    >
+      <Text style={[styles.name, { color: textColor }]}>{item.name}</Text>
+      <Text style={[styles.date, { color: textColor }]}>
+        🎂 {item.date}
+      </Text>
+    </TouchableOpacity>
+  );
  const textColor = useColor("text");
  
 

@@ -6,20 +6,16 @@ import { useColor } from "@/hooks/use-colors";
 import { useLocalSearchParams } from "expo-router";
 import { useNavigation } from "@react-navigation/native";
 import { DetailsView } from "@/components/views/details-view";
-
-type PersonData = { name: string; birthday: string }; //DD-MM-RRRR
+import {useFirebaseData} from "@/context/FirebaseDataContex";
+import {CalendarRecord} from "@/constants/types";
+import {updateMyHomie} from "@/components/database";
 
 export default function DetailsScreen() {
   const { id } = useLocalSearchParams();
-  const parsedId =
-    typeof id === "string"
-      ? Number(id)
-      : Array.isArray(id)
-      ? Number(id[0])
-      : undefined;
+  const parsedId = id.toString()
 
   const [mode, setMode] = useState<"view" | "edit" | "add">("view");
-  const [initialData, setInitialData] = useState<PersonData | undefined>(
+  const [initialData, setInitialData] = useState<CalendarRecord | undefined>(
     undefined
   );
   const [loading, setLoading] = useState(false);
@@ -27,6 +23,10 @@ export default function DetailsScreen() {
 
   const tintColor = useColor("tint");
   const navigation = useNavigation();
+
+
+  //const { calendarData, usersData, loading, refresh } = useFirebaseData();
+  const { calendarData, refresh } = useFirebaseData();
 
   useEffect(() => {
     //jesli nie ma id, nie ładujemy
@@ -48,19 +48,8 @@ export default function DetailsScreen() {
       try {
         setLoading(true);
         setErr(undefined);
-        //todo:fetch real api
-        //const res = await fetch(`https://api.example.com/person/${parsedId}`);
-        //if(!res.ok) throw new Error(`http ${res.status}`);
-        //const j = await res.json();
-        //const data: PersonData = { name: j.name, birthday: toDDMMYYYY(j.birthday) };
-
-        //mock
-        const data: PersonData = {
-          name: `Person ${parsedId}`,
-          birthday: toDDMMYYYY("2025-11-07"),
-        };
-
-        if (!cancelled) setInitialData(data);
+        const person = calendarData.find(x => x.id === parsedId)
+        if (!cancelled) setInitialData(person);
       } catch (e: any) {
         if (!cancelled) setErr(e?.message ?? "load error");
       } finally {
@@ -103,11 +92,17 @@ export default function DetailsScreen() {
     });
   }, [mode, navigation, tintColor]);
 
-  const handleSaveEdit = (data: PersonData) => {
-    //todo:update api/store
-    setInitialData(data); //update lokalnego widoku
-    setMode("view");
+  const handleSaveEdit = (data: CalendarRecord) => {
+      if( initialData) {
+          data.id = initialData.id;
+          data.uid = initialData.uid;
+      }
+      updateMyHomie(data);
+      refresh();
+      setInitialData(data); //update lokalnego widoku
+      setMode("view");
   };
+
 
   if (parsedId != null && loading) {
     return (

@@ -14,22 +14,21 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useColor } from "@/hooks/use-colors";
+import { Feather, Ionicons } from "@expo/vector-icons";
+import { Fonts } from "@/constants/theme";
+import { Avatar } from "@/components/ui/avatar";
+import {CalendarRecord} from "@/constants/types";
 
 type Mode = "add" | "edit" | "view";
-type PersonData = {
-  name: string;
-  birthday: string;
-  phone?: string;
-  email?: string;
-};
 
 interface DetailsViewProps {
-  id?: number;
+  id?: string;
   mode?: Mode;
   setMode?: (m: Mode) => void;
-  onSaveAdd?: (data: PersonData) => void;
-  onSaveEdit?: (data: PersonData) => void;
-  initialData?: PersonData;
+  onSaveAdd?: (data: CalendarRecord) => void;
+  onSaveEdit?: (data: CalendarRecord) => void;
+  initialData?: CalendarRecord;
   errorText?: string;
 }
 
@@ -55,9 +54,9 @@ export function DetailsView({
   //saved state
   const [name, setName] = useState(initialData?.name ?? "Person 1");
   const [birthday, setBirthday] = useState(
-    initialData?.birthday ?? "07-11-2025"
+    initialData?.date ?? "07-11-2025"
   );
-  const [phone, setPhone] = useState(initialData?.phone ?? "");
+  const [phone, setPhone] = useState(initialData?.phone?.toString() ?? "");
   const [email, setEmail] = useState(initialData?.email ?? "");
 
   //temp state
@@ -117,13 +116,13 @@ export function DetailsView({
   useEffect(() => {
     if (!initialData) return;
     setName(initialData.name ?? "");
-    setBirthday(initialData.birthday ?? "");
-    setPhone(initialData.phone ?? "");
+    setBirthday(initialData.date ?? "");
+    setPhone(initialData.phone?.toString() ?? "");
     setEmail(initialData.email ?? "");
     if (mode === "view") {
       setTmpName(initialData.name ?? "");
-      setTmpBirthday(initialData.birthday ?? "");
-      setTmpPhone(initialData.phone ?? "");
+      setTmpBirthday(initialData.date ?? "");
+      setTmpPhone(initialData.phone?.toString() ?? "");
       setTmpEmail(initialData.email ?? "");
     }
   }, [initialData]); //eslint-disable-line
@@ -164,8 +163,8 @@ export function DetailsView({
 
     const data = {
       name: tmpName,
-      birthday: tmpBirthday,
-      phone: tmpPhone,
+      date: tmpBirthday,
+     ...(isNaN(parseInt(tmpPhone)) ? {}: {phone : parseInt(tmpPhone)}),
       email: tmpEmail,
     };
     if (mode === "add") {
