@@ -1,13 +1,12 @@
 import { Avatar } from "@/components/ui/avatar";
+import { Spinner } from "@/components/ui/Spinner";
 import { Fonts } from "@/constants/theme";
 import { useColors } from "@/hooks/use-colors";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { Stack, useRouter } from "expo-router";
 import React, { useState } from "react";
-import { ScrollView } from "react-native";
-
 import {
-  StyleSheet,
+  ScrollView, StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -153,7 +152,7 @@ const [birthday, setBirthday] = useState("01-01-2025");
               onChangeText={setTempName}
             />
 
-            {/* <Text
+             <Text
               style={[
                 styles.label,
                 { color: colors.text, marginTop: 18, fontFamily: Fonts.sans },
@@ -167,32 +166,8 @@ const [birthday, setBirthday] = useState("01-01-2025");
       value={tempBirthday}
       onChange={handleBirthdayChange}
     />
-  </View> */}
- <Text
-              style={[
-                styles.label,
-                { color: colors.text, marginTop: 18, fontFamily: Fonts.sans },
-              ]}
-            >
-              Birthday date
-            </Text>
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  color: colors.text,
-                  borderColor: colors.card,
-                  fontFamily: Fonts.sans,
-                },
-              ]}
-              keyboardType="numeric"
-              placeholder="DD-MM-RRRR"
-              maxLength={10}
-              value={tempBirthday}
-              editable={isEditing}
-              selectTextOnFocus={isEditing}
-              onChangeText={handleBirthdayChange}
-            />
+  </View> 
+
             <Text
               style={[
                 styles.label,
