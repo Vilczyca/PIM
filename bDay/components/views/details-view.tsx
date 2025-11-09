@@ -14,11 +14,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useColor } from "@/hooks/use-colors";
-import { Feather, Ionicons } from "@expo/vector-icons";
-import { Fonts } from "@/constants/theme";
-import { Avatar } from "@/components/ui/avatar";
-import {CalendarRecord} from "@/constants/types";
+
+
+import { CalendarRecord } from "@/constants/types";
 
 type Mode = "add" | "edit" | "view";
 
@@ -146,12 +144,12 @@ export function DetailsView({
     }
   }, [mode, name, birthday, phone, email]);
 
-  //format dd-mm-rrrr
+
   const onBirthdayChange = (text: string) => {
-    //usun niecyfry
+  
     let d = text.replace(/\D/g, "");
     if (d.length > 8) d = d.slice(0, 8);
-    //wstaw '-'
+  
     let f = d;
     if (d.length > 4) f = `${d.slice(0, 2)}-${d.slice(2, 4)}-${d.slice(4)}`;
     else if (d.length > 2) f = `${d.slice(0, 2)}-${d.slice(2)}`;
@@ -179,8 +177,7 @@ export function DetailsView({
     }
   };
 
-  //actions
-
+  
   const onCall = () => {
     if (!phone) return Alert.alert("Brak numeru telefonu");
     Linking.openURL(`tel:${phone}`);
@@ -312,30 +309,7 @@ export function DetailsView({
             placeholder="Name"
           />
 
-          {/* <Text
-            style={[
-              styles.label,
-              { color: colors.text, marginTop: 18, fontFamily: Fonts.sans },
-            ]}
-          >
-            Birthday date (DD-MM-RRRR)
-          </Text>
-          <TextInput
-            style={[
-              styles.input,
-              {
-                color: colors.text,
-                borderColor: colors.card,
-                fontFamily: Fonts.sans,
-              },
-            ]}
-            editable={isEditing}
-            keyboardType="numeric"
-            maxLength={10}
-            placeholder={"DD-MM-RRRR"}
-            value={tmpBirthday}
-            onChangeText={onBirthdayChange}
-          /> */}
+
              <View style={{ height: 200, justifyContent: "center" }}>
                 <Spinner
                   value={tmpBirthday}

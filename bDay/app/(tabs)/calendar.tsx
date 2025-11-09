@@ -1,26 +1,15 @@
 import { AddBdayButton } from "@/components/ui/add-bday-button";
 import { BdayCard } from "@/components/ui/BdayCard";
+import { CalendarRecord } from "@/constants/types";
+import { useFirebaseData } from "@/context/FirebaseDataContex";
 import { useColor } from "@/hooks/use-colors";
-import {useFirebaseData} from "@/context/FirebaseDataContex";
-import {CalendarRecord} from "@/constants/types";
 
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { Calendar } from "react-native-calendars";
 
-type CardItem = {
-  id: string;
-  name: string;
-  birthday: string;
-  image?: string;
-};
 
-const DATA: CardItem[] = [
-  { id: "1", name: "Julia Kowalska", birthday: "2001-11-01" },
-  { id: "2", name: "Michał Nowak", birthday: "1998-10-27" },
-  { id: "3", name: "Kasia Zielińska", birthday: "2000-02-14" },
-];
 
 export default function CalendarScreen() {
   const router = useRouter();
@@ -28,10 +17,11 @@ export default function CalendarScreen() {
   const cardColor = useColor("card");
   const textColor = useColor("text");
   const currentDayColor = useColor("calendarToday");
+ const { calendarData, loading, refresh } = useFirebaseData();
 
   const today = new Date().toISOString().split("T")[0];
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [filteredData, setFilteredData] = useState<CardItem[]>([]);
+  const [filteredData, setFilteredData] = useState<CalendarRecord[]>([]);
 
   const calendarTheme = {
     arrowColor: textColor,
@@ -45,55 +35,96 @@ export default function CalendarScreen() {
 
 
 
+const getMarkedDates = useMemo(() => {
+  const marks: any = {};
 
-  const getMarkedDates = useMemo(() => {
-    const marks: any = {};
-    DATA.forEach((person) => {
-      const birthday = person.birthday.slice(5);
-      const thisYearBday = `${new Date().getFullYear()}-${birthday}`;
-      marks[thisYearBday] = { marked: true, dotColor: currentDayColor };
-    });
-    marks[today] = { ...marks[today], selected: true, selectedColor: currentDayColor };
-    if (selectedDate) {
-      marks[selectedDate] = { ...marks[selectedDate], selected: true, selectedColor: "#d3d3d3" };
+  calendarData.forEach((person) => {
+    if (!person.date) return; 
+
+    const [dayStr, monthStr, yearStr] = person.date.split("-");
+    if (!dayStr || !monthStr || !yearStr) return; 
+
+    const thisYearBday = `${new Date().getFullYear()}-${monthStr.padStart(2, "0")}-${dayStr.padStart(2, "0")}`;
+    marks[thisYearBday] = { marked: true, dotColor: currentDayColor };
+  });
+
+  
+  marks[today] = { ...marks[today], selected: true, selectedColor: currentDayColor };
+
+  if (selectedDate) {
+    marks[selectedDate] = { ...marks[selectedDate], selected: true, selectedColor: "#d3d3d3" };
+  }
+
+  return marks;
+}, [today, selectedDate, calendarData, currentDayColor]);
+
+
+const handleDayPress = (day: any) => {
+  const clickedDate = day.dateString; 
+
+
+  const getDayMonth = (dateStr: string, format: "yyyy-mm-dd" | "dd-mm-yyyy") => {
+    if (!dateStr) return { day: "", month: "" };
+    if (format === "yyyy-mm-dd") {
+      const [y, m, d] = dateStr.split("-");
+      return { day: d, month: m };
+    } else {
+      const [d, m, y] = dateStr.split("-");
+      return { day: d, month: m };
     }
-    return marks;
-  }, [today, selectedDate, DATA, currentDayColor]);
-
-
-  const handleDayPress = (day: any) => {
-    const clickedDate = day.dateString;
-
-    if (selectedDate === clickedDate) {
-      setSelectedDate(null);
-      const todayMD = today.slice(5);
-      const birthdayPeople = DATA.filter(
-        (person) => person.birthday.slice(5) === todayMD
-      );
-      setFilteredData(birthdayPeople);
-      return;
-    }
-
-    setSelectedDate(clickedDate);
-    const selectedMD = clickedDate.slice(5);
-    const birthdayPeople = DATA.filter(
-      (person) => person.birthday.slice(5) === selectedMD
-    );
-    setFilteredData(birthdayPeople);
   };
 
+  const clickedDM = getDayMonth(clickedDate, "yyyy-mm-dd");
 
-  useEffect(() => {
-    const todayMD = today.slice(5);
-    const todayBdays = DATA.filter(
-      (person) => person.birthday.slice(5) === todayMD
-    );
-    setFilteredData(todayBdays);
-  }, [today]);
+  if (selectedDate === clickedDate) {
+    setSelectedDate(null);
+
+    const todayDM = getDayMonth(today, "yyyy-mm-dd");
+
+    const birthdayPeople = calendarData.filter((person) => {
+      if (!person.date) return false;
+      const personDM = getDayMonth(person.date, "dd-mm-yyyy");
+      return personDM.day === todayDM.day && personDM.month === todayDM.month;
+    });
+ birthdayPeople.forEach((p) => {
+      console.log(`${p.name} has ${daysUntilBirthday(p.date!)} days left`);
+    });
+
+    setFilteredData(birthdayPeople);
+    return;
+  }
+
+  setSelectedDate(clickedDate);
+
+  const birthdayPeople = calendarData.filter((person) => {
+    if (!person.date) return false;
+    const personDM = getDayMonth(person.date, "dd-mm-yyyy");
+    return personDM.day === clickedDM.day && personDM.month === clickedDM.month;
+  });
+
+  setFilteredData(birthdayPeople);
+};
+
+
+
+useEffect(() => {
+  if (!calendarData) return;
+
+  const todayParts = today.split("-"); 
+  const todayMD = todayParts[0] + " " + todayParts[1]; 
+
+  const todayBdays = calendarData.filter(
+    (person) => person.date && person.date.slice(0, 5) === todayMD
+  );
+
+  setFilteredData(todayBdays);
+}, [today, calendarData]);
+
+
 const daysUntilBirthday = (birthday: string): number => {
   const today = new Date();
   const currentYear = today.getFullYear();
-  const [, month, day] = birthday.split("-").map(Number);
+  const [day, month, year] = birthday.split("-").map(Number);
 
   
   const todayMidnight = new Date(currentYear, today.getMonth(), today.getDate());
@@ -106,28 +137,30 @@ const daysUntilBirthday = (birthday: string): number => {
   return Math.ceil((thisYearBday.getTime() - todayMidnight.getTime()) / (1000 * 60 * 60 * 24))
 }
 
-  const renderItem = ({ item }: { item: CardItem }) => {
-    const itemMD = item.birthday.slice(5);
-    const todayMD = today.slice(5);
-    const selectedMD = selectedDate ? selectedDate.slice(5) : null;
-    
+  const renderItem = ({ item }: { item: CalendarRecord }) => {
+  if (!item.date) return null; 
 
-    return (
-      <BdayCard
-        id={item.id}
-        name={item.name}
-        birthday={item.birthday}
-        isBirthdayToday={daysUntilBirthday(item.birthday) === 0}
-        showDaysLeft={!selectedDate}
-        onPress={() =>
-          router.push({
-            pathname: "/(screens)/detailsScreen",
-            params: { id: item.id, mode: "view" },
-          })
-        }
-      />
-    );
-  };
+  const itemMD = item.date.slice(5);
+  const todayMD = today.slice(5);
+  const selectedMD = selectedDate ? selectedDate.slice(5) : null;
+
+  return (
+    <BdayCard
+      id={item.id}
+      name={item.name}
+      birthday={item.date}
+      isBirthdayToday={daysUntilBirthday(item.date) === 0}
+      showDaysLeft={!selectedDate}
+      onPress={() =>
+        router.push({
+          pathname: "/(screens)/detailsScreen",
+          params: { id: item.id, mode: "view" },
+        })
+      }
+    />
+  );
+};
+
 
   return (
     <View style={[styles.container, { backgroundColor: bgColor }]}>

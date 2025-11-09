@@ -30,7 +30,23 @@ export function Spinner({ value = "01-01-2025", onChange }: SpinnerProps) {
   const months = Array.from({ length: 12 }, (_, i) => i);
   const years = Array.from({ length: 101 }, (_, i) =>  today.getFullYear() - i);
 
+ useEffect(() => {
+  const { day: newDay, month: newMonth, year: newYear } = parseDate(value);
+
+  setDay(newDay);
+  setMonth(newMonth);
+  setYear(newYear);
+
  
+  dayRef.current?.scrollTo({ y: (newDay - 1) * ITEM_HEIGHT, animated: false });
+  monthRef.current?.scrollTo({ y: newMonth * ITEM_HEIGHT, animated: false });
+
+  const yearIndex = years.indexOf(newYear);
+  if (yearIndex >= 0) {
+    yearRef.current?.scrollTo({ y: yearIndex * ITEM_HEIGHT, animated: false });
+  }
+}, [value]);
+
 useEffect(() => {
   dayRef.current?.scrollTo({ y: (day - 1) * ITEM_HEIGHT, animated: false });
   monthRef.current?.scrollTo({ y: month * ITEM_HEIGHT, animated: false });

@@ -1,35 +1,21 @@
+import { AddBdayButton } from "@/components/ui/add-bday-button";
+import { useFirebaseData } from "@/context/FirebaseDataContex";
+import { useColor } from "@/hooks/use-colors";
+import { useRouter } from "expo-router";
 import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
   StyleSheet,
+  Text,
+  View
 } from "react-native";
-import { useRouter } from "expo-router";
-import { useColor } from "@/hooks/use-colors";
-import { AddBdayButton } from "@/components/ui/add-bday-button";
-import {CalendarRecord} from "@/constants/types";
-import {useFirebaseData} from "@/context/FirebaseDataContex";
 
-import { AddBdayButton } from "@/components/ui/add-bday-button";
+
 import { BdayCard } from "@/components/ui/BdayCard";
-import { useColor } from "@/hooks/use-colors";
-import { useRouter } from "expo-router";
+
+import { CalendarRecord } from "@/constants/types";
 import { useMemo } from "react";
-import { SectionList, StyleSheet, Text, View } from "react-native";
+import { SectionList } from "react-native";
 
-type CardItem = {
-  id: string;
-  name: string;
-  birthday: string;
-  avatar?: string;
-};
 
-const DATA: CardItem[] = [
-  { id: "1", name: "Julia Kowalska", birthday: "2001-10-29" },
-  { id: "2", name: "Michał Nowak", birthday: "1998-10-27" },
-  { id: "3", name: "Kasia Zielińska", birthday: "2000-02-14" },
-];
 
 export default function CardsScreen() {
   const router = useRouter();
@@ -38,65 +24,58 @@ export default function CardsScreen() {
   const textColor = useColor("text");
   const { calendarData, loading, refresh } = useFirebaseData();
 
-  const renderItem = ({ item }: { item: CalendarRecord }) => (
-    <TouchableOpacity
-      style={[styles.card, { backgroundColor: cardColor }]}
-      onPress={() =>
-        router.push({
-          pathname: "/(screens)/detailsScreen",
-          params: { id: item.id, mode: "view" },
-        })
-      }
-    >
-      <Text style={[styles.name, { color: textColor }]}>{item.name}</Text>
-      <Text style={[styles.date, { color: textColor }]}>
-        🎂 {item.date}
-      </Text>
-    </TouchableOpacity>
-  );
- const textColor = useColor("text");
+  
+
  
 
+const daysUntilBirthday = (birthday: string): number => {
 
- const daysUntilBirthday = (birthday: string): number => {
+  const [dayStr, monthStr, yearStr] = birthday.split("-");
+  if (!dayStr || !monthStr || !yearStr) return Infinity; 
+
   const today = new Date();
   const currentYear = today.getFullYear();
-  const [, month, day] = birthday.split("-").map(Number);
+  const day = Number(dayStr);
+  const month = Number(monthStr);
 
-  
   const todayMidnight = new Date(currentYear, today.getMonth(), today.getDate());
   const thisYearBday = new Date(currentYear, month - 1, day);
 
   if (thisYearBday < todayMidnight) thisYearBday.setFullYear(currentYear + 1);
 
- 
+  return Math.ceil((thisYearBday.getTime() - todayMidnight.getTime()) / (1000 * 60 * 60 * 24));
+};
 
-  return Math.ceil((thisYearBday.getTime() - todayMidnight.getTime()) / (1000 * 60 * 60 * 24))
-}
 
-const sections = useMemo(()=>{
-    const todayList: CardItem[]=[];
-    const incomingList : CardItem[] =[];
+const sections = useMemo(() => {
+  const todayList: CalendarRecord[] = [];
+  const incomingList: CalendarRecord[] = [];
 
-  DATA.forEach((item)=> {
-    const daysLeft = daysUntilBirthday(item.birthday);
-    if (daysLeft ===0){
+  calendarData.forEach((item) => {
+  if (item.date) { 
+    const daysLeft = daysUntilBirthday(item.date);
+    if (daysLeft === 0) {
       todayList.push(item);
-    }
-    else{
+    } else {
       incomingList.push(item);
     }
+  }
+});
 
 
-  });
-  incomingList.sort(
-      (a, b) => daysUntilBirthday(a.birthday) - daysUntilBirthday(b.birthday)
-    );
+ incomingList.sort((a, b) => {
+  const daysA = a.date ? daysUntilBirthday(a.date) : Infinity;
+  const daysB = b.date ? daysUntilBirthday(b.date) : Infinity;
+  return daysA - daysB;
+});
 
-    return [{
-      title:"TODAY", data: todayList},
-      {title: "INCOMING", data: incomingList},].filter((section)=>section.data.length>0)
-    },[]);
+
+  return [
+    { title: "TODAY", data: todayList },
+    { title: "INCOMING", data: incomingList },
+  ].filter((section) => section.data.length > 0);
+}, [calendarData]);
+
 
  
 
@@ -117,10 +96,12 @@ const sections = useMemo(()=>{
           <BdayCard
             id={item.id}
             name={item.name}
-            birthday={item.birthday}
+            birthday={item.date}
             avatar={item.avatar}
             showDaysLeft={true}
-            isBirthdayToday={daysUntilBirthday(item.birthday) === 0}
+            isBirthdayToday={daysUntilBirthday(item.date ?? "") === 0}
+
+
             onPress={() => handlePress(item.id)}
           />
         )}

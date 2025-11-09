@@ -1,5 +1,4 @@
 import { Avatar } from "@/components/ui/avatar";
-import { Spinner } from "@/components/ui/Spinner";
 import { Fonts } from "@/constants/theme";
 import { useColors } from "@/hooks/use-colors";
 import { Feather, Ionicons } from "@expo/vector-icons";
@@ -63,12 +62,12 @@ const [birthday, setBirthday] = useState("01-01-2025");
 
   const disabled = !isEditing;
 
-  // // formatowanie daty na DD-MM-RRRR
+  
   const handleBirthdayChange = (text: string) => {
-    let digits = text.replace(/\D/g, ""); // usun wszystko poza cyframi
+    let digits = text.replace(/\D/g, ""); 
     if (digits.length > 8) digits = digits.slice(0, 8);
 
-    // dodaj myślniki po 2 i 4 znakach
+  
     let formatted = digits;
     if (digits.length > 4) {
       formatted = `${digits.slice(0, 2)}-${digits.slice(2, 4)}-${digits.slice(
@@ -80,15 +79,6 @@ const [birthday, setBirthday] = useState("01-01-2025");
 
     setTempBirthday(formatted);
   };
-//   const handleBirthdayChange = (date: Date) => {
-//   const yyyy = date.getFullYear();
-//   const mm = String(date.getMonth() + 1).padStart(2, "0");
-//   const dd = String(date.getDate()).padStart(2, "0");
-
-//   const formatted = `${yyyy}-${mm}-${dd}`;
-//  setTempBirthday(formatted);  
- 
-// };
 
 
   return (
@@ -163,7 +153,7 @@ const [birthday, setBirthday] = useState("01-01-2025");
               onChangeText={setTempName}
             />
 
-            <Text
+            {/* <Text
               style={[
                 styles.label,
                 { color: colors.text, marginTop: 18, fontFamily: Fonts.sans },
@@ -171,7 +161,22 @@ const [birthday, setBirthday] = useState("01-01-2025");
             >
               Birthday date
             </Text>
-            {/* <TextInput
+           
+             <View style={{ height: 200, justifyContent: "center" }}>
+    <Spinner
+      value={tempBirthday}
+      onChange={handleBirthdayChange}
+    />
+  </View> */}
+ <Text
+              style={[
+                styles.label,
+                { color: colors.text, marginTop: 18, fontFamily: Fonts.sans },
+              ]}
+            >
+              Birthday date
+            </Text>
+            <TextInput
               style={[
                 styles.input,
                 {
@@ -187,14 +192,7 @@ const [birthday, setBirthday] = useState("01-01-2025");
               editable={isEditing}
               selectTextOnFocus={isEditing}
               onChangeText={handleBirthdayChange}
-            /> */}
-             <View style={{ height: 200, justifyContent: "center" }}>
-    <Spinner
-      value={tempBirthday}
-      onChange={handleBirthdayChange}
-    />
-  </View>
-
+            />
             <Text
               style={[
                 styles.label,
