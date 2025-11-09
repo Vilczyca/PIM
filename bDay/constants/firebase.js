@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
+import { createUserWithEmailAndPassword, getAuth, getRedirectResult, GoogleAuthProvider, signInWithCredential, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, signOut } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import {GoogleAuthProvider, signInWithCredential, getRedirectResult,signInWithRedirect, getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
 
 const firebaseConfig = {
     apiKey: process.env.EXPO_PUBLIC_API_KEY,
@@ -12,9 +12,9 @@ const firebaseConfig = {
     measurementId: process.env.EXPO_PUBLIC_MEASUREMENT_ID,
 };
 
-
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const provider = new GoogleAuthProvider();
-export { signInWithCredential, signInWithPopup,createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut , signInWithRedirect,getRedirectResult, GoogleAuthProvider};
+export { createUserWithEmailAndPassword, getRedirectResult, GoogleAuthProvider, signInWithCredential, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, signOut };
+

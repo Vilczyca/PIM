@@ -1,14 +1,13 @@
-//app/detailsScreen.tsx
-import { useEffect, useState, useLayoutEffect } from "react";
-import { TouchableOpacity, ActivityIndicator, View } from "react-native";
-import { Feather, Ionicons } from "@expo/vector-icons";
-import { useColor } from "@/hooks/use-colors";
-import { useLocalSearchParams } from "expo-router";
-import { useNavigation } from "@react-navigation/native";
+import { updateMyHomie } from "@/components/database";
 import { DetailsView } from "@/components/views/details-view";
-import {useFirebaseData} from "@/context/FirebaseDataContex";
-import {CalendarRecord} from "@/constants/types";
-import {updateMyHomie} from "@/components/database";
+import { CalendarRecord } from "@/constants/types";
+import { useFirebaseData } from "@/context/FirebaseDataContex";
+import { useColor } from "@/hooks/use-colors";
+import { Feather, Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { useLocalSearchParams } from "expo-router";
+import { useEffect, useLayoutEffect, useState } from "react";
+import { ActivityIndicator, TouchableOpacity, View } from "react-native";
 
 export default function DetailsScreen() {
   const { id } = useLocalSearchParams();
@@ -25,11 +24,10 @@ export default function DetailsScreen() {
   const navigation = useNavigation();
 
 
-  //const { calendarData, usersData, loading, refresh } = useFirebaseData();
   const { calendarData, refresh } = useFirebaseData();
 
   useEffect(() => {
-    //jesli nie ma id, nie ładujemy
+   
     if (parsedId == null || Number.isNaN(parsedId)) return;
 
     let cancelled = false;
@@ -99,7 +97,7 @@ export default function DetailsScreen() {
       }
       updateMyHomie(data);
       refresh();
-      setInitialData(data); //update lokalnego widoku
+      setInitialData(data);
       setMode("view");
   };
 
