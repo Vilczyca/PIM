@@ -20,16 +20,80 @@ import {
   signOut,
   updateProfile,
 } from "@/constants/firebase";
+import {
+  getRegisteredUsers,
+  updateUserInRegisteredUsers,
+} from "@/components/database";
+
+// Funkcja pomocnicza do formatowania daty
+const formatDateForSpinner = (date: Date | string | null): string => {
+  if (!date) {
+    // Zwróć dzisiejszą datę jako domyślną
+    const today = new Date();
+    return today
+      .toLocaleDateString("pl-PL", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+      .replace(/\./g, "-");
+  }
+
+  // Jeśli to już string w formacie DD-MM-YYYY, zwróć bez zmian
+  if (typeof date === "string" && /^\d{2}-\d{2}-\d{4}$/.test(date)) {
+    return date;
+  }
+
+  // Jeśli to string w innym formacie, spróbuj przekonwertować
+  if (typeof date === "string") {
+    try {
+      const parsedDate = new Date(date);
+      if (!isNaN(parsedDate.getTime())) {
+        return parsedDate
+          .toLocaleDateString("pl-PL", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })
+          .replace(/\./g, "-");
+      }
+    } catch (e) {
+      console.error("Date conversion error:", e);
+    }
+  }
+
+  // Jeśli to obiekt Date
+  if (date instanceof Date) {
+    return date
+      .toLocaleDateString("pl-PL", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+      .replace(/\./g, "-");
+  }
+
+  // Fallback: dzisiejsza data
+  const today = new Date();
+  return today
+    .toLocaleDateString("pl-PL", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    })
+    .replace(/\./g, "-");
+};
 
 export default function UserScreen() {
   const colors = useColors();
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Dane użytkownika z Firebase
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [name, setName] = useState("");
-  const [birthday, setBirthday] = useState("01-01-2025");
+  const [birthday, setBirthday] = useState("");
   const [email, setEmail] = useState("");
 
   // Tymczasowe wartości do edycji
@@ -41,13 +105,54 @@ export default function UserScreen() {
 
   // Pobierz dane zalogowanego użytkownika
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setCurrentUser(user);
-        setName(user.displayName || "User");
-        setEmail(user.email || "");
-        setTempName(user.displayName || "User");
-        setTempEmail(user.email || "");
+
+        // Ustaw podstawowe dane z Firebase Auth
+        const displayName = user.displayName || "User";
+        const userEmail = user.email || "";
+
+        setName(displayName);
+        setEmail(userEmail);
+        setTempName(displayName);
+        setTempEmail(userEmail);
+
+        // Pobierz datę urodzenia z kolekcji registered_users
+        try {
+          console.log("Fetching user data for UID:", user.uid);
+          const usersData = await getRegisteredUsers();
+          console.log("All users data:", usersData);
+
+          const currentUserData = usersData?.find((u) => u.uid === user.uid);
+          console.log("Current user data:", currentUserData);
+
+          if (currentUserData?.date) {
+            console.log("Found birthday:", currentUserData.date);
+            const formattedBirthday = formatDateForSpinner(
+              currentUserData.date
+            );
+            console.log("Formatted birthday for spinner:", formattedBirthday);
+
+            setBirthday(formattedBirthday);
+            setTempBirthday(formattedBirthday);
+          } else {
+            // Ustaw domyślną datę jeśli nie znaleziono
+            const formattedToday = formatDateForSpinner(null);
+            console.log("No birthday found, using default:", formattedToday);
+
+            setBirthday(formattedToday);
+            setTempBirthday(formattedToday);
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          // Ustaw domyślną datę w przypadku błędu
+          const formattedToday = formatDateForSpinner(null);
+          setBirthday(formattedToday);
+          setTempBirthday(formattedToday);
+        }
+
+        setIsLoading(false);
       } else {
         // Jeśli użytkownik nie jest zalogowany, wróć do logowania
         router.replace("./loginScreen");
@@ -69,12 +174,21 @@ export default function UserScreen() {
 
   const onSave = async () => {
     try {
-      // Aktualizuj profil w Firebase
+      setIsLoading(true);
+
+      // Aktualizuj profil w Firebase Auth
       if (currentUser && tempName !== currentUser.displayName) {
         await updateProfile(currentUser, {
           displayName: tempName,
         });
       }
+
+      // Aktualizuj dane w registered_users
+      await updateUserInRegisteredUsers(currentUser.uid, {
+        name: tempName,
+        date: tempBirthday,
+        email: tempEmail,
+      });
 
       // Zaktualizuj lokalny stan
       setName(tempName);
@@ -82,11 +196,17 @@ export default function UserScreen() {
       setEmail(tempEmail);
       setIsEditing(false);
 
-      console.log("Profile updated:", tempName, tempBirthday, tempEmail);
+      console.log("Profile updated:", {
+        name: tempName,
+        birthday: tempBirthday,
+        email: tempEmail,
+      });
       Alert.alert("Success", "Profile updated successfully!");
     } catch (error) {
       console.error("Error updating profile: ", error);
       Alert.alert("Error", "Failed to update profile");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -123,7 +243,25 @@ export default function UserScreen() {
     setTempBirthday(formatted);
   };
 
-  // Jeśli użytkownik nie jest załadowany, pokaż loading
+  // Jeśli dane się ładują, pokaż loading
+  if (isLoading) {
+    return (
+      <View
+        style={[
+          styles.root,
+          {
+            backgroundColor: colors.background,
+            justifyContent: "center",
+            alignItems: "center",
+          },
+        ]}
+      >
+        <Text style={{ color: colors.text }}>Loading user data...</Text>
+      </View>
+    );
+  }
+
+  // Jeśli użytkownik nie jest załadowany
   if (!currentUser) {
     return (
       <View
@@ -136,7 +274,7 @@ export default function UserScreen() {
           },
         ]}
       >
-        <Text style={{ color: colors.text }}>Loading...</Text>
+        <Text style={{ color: colors.text }}>No user data found</Text>
       </View>
     );
   }
@@ -158,8 +296,11 @@ export default function UserScreen() {
             <TouchableOpacity
               onPress={() => (isEditing ? onCancelEdit() : startEdit())}
               style={{ marginRight: 16 }}
+              disabled={isLoading}
             >
-              {isEditing ? (
+              {isLoading ? (
+                <Feather name="loader" size={22} color={colors.text} />
+              ) : isEditing ? (
                 <Feather name="x" size={22} color={tintColor} />
               ) : (
                 <Feather name="edit-3" size={22} color={tintColor} />
@@ -219,15 +360,16 @@ export default function UserScreen() {
                 styles.input,
                 {
                   color: colors.text,
-                  borderColor: colors.card,
+                  borderColor: isEditing ? colors.tint : colors.card,
                   fontFamily: Fonts.sans,
                 },
               ]}
               value={tempName}
-              editable={isEditing}
+              editable={isEditing && !isLoading}
               selectTextOnFocus={isEditing}
               onChangeText={setTempName}
               placeholder="Enter your name"
+              placeholderTextColor={colors.text + "80"}
             />
 
             <Text
@@ -239,9 +381,11 @@ export default function UserScreen() {
               Birthday date
             </Text>
 
-            <View style={{ height: 200, justifyContent: "center" }}>
-              <Spinner value={tempBirthday} onChange={handleBirthdayChange} />
-            </View>
+            <Spinner value={tempBirthday} onChange={handleBirthdayChange} />
+
+            <Text style={[styles.hint, { color: colors.text, marginTop: 12 }]}>
+              Current: {tempBirthday} | Format: DD-MM-YYYY
+            </Text>
 
             <Text
               style={[
@@ -256,14 +400,15 @@ export default function UserScreen() {
                 styles.input,
                 {
                   color: colors.text,
-                  borderColor: colors.card,
+                  borderColor: isEditing ? colors.tint : colors.card,
                   fontFamily: Fonts.sans,
                 },
               ]}
               keyboardType="email-address"
               placeholder="Optional"
+              placeholderTextColor={colors.text + "80"}
               value={tempEmail}
-              editable={isEditing}
+              editable={isEditing && !isLoading}
               selectTextOnFocus={isEditing}
               onChangeText={setTempEmail}
             />
@@ -271,8 +416,13 @@ export default function UserScreen() {
         </ScrollView>
 
         <TouchableOpacity
-          style={[styles.bottomBtn, { backgroundColor: colors.tint }]}
+          style={[
+            styles.bottomBtn,
+            { backgroundColor: colors.tint },
+            isLoading && { opacity: 0.6 },
+          ]}
           onPress={isEditing ? onSave : onLogout}
+          disabled={isLoading}
         >
           <Text
             style={{
@@ -282,7 +432,7 @@ export default function UserScreen() {
               fontFamily: Fonts.sans,
             }}
           >
-            {isEditing ? "Save" : "Logout"}
+            {isLoading ? "Processing..." : isEditing ? "Save" : "Logout"}
           </Text>
         </TouchableOpacity>
       </View>
@@ -321,6 +471,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 16,
     fontSize: 16,
+  },
+  hint: {
+    fontSize: 12,
+    textAlign: "center",
+    marginBottom: 8,
+    opacity: 0.7,
   },
   bottomBtn: {
     position: "absolute",

@@ -16,6 +16,7 @@ import { Fonts } from "@/constants/theme";
 import { insertMyHomie } from "@/components/database";
 import { CalendarRecord } from "@/constants/types";
 import { useFirebaseData } from "@/context/FirebaseDataContex";
+import { auth } from "@/constants/firebase"; // Dodaj import auth
 
 export default function AddDetailsModal() {
   const router = useRouter();
@@ -28,6 +29,9 @@ export default function AddDetailsModal() {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const { calendarData, usersData, loading, refresh } = useFirebaseData();
   const [results, setResults] = useState(usersData);
+
+  // Pobierz UID aktualnie zalogowanego użytkownika
+  const currentUserUid = auth.currentUser?.uid;
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -72,17 +76,29 @@ export default function AddDetailsModal() {
   };
 
   const handleResultsChange = (newResults: any[]) => {
-    setResults(newResults);
+    // Filtruj wyniki - usuń aktualnego użytkownika
+    const filteredResults = newResults.filter(
+      (user) => user.uid !== currentUserUid && user.id !== currentUserUid
+    );
+    setResults(filteredResults);
 
-    if (selectedItem && !newResults.some((r) => r.id === selectedItem.id)) {
+    if (
+      selectedItem &&
+      !filteredResults.some((r) => r.id === selectedItem.id)
+    ) {
       setSelectedItem(null);
     }
   };
 
+  // Filtruj początkową listę użytkowników
+  const filteredUsersData = usersData.filter(
+    (user) => user.uid !== currentUserUid && user.id !== currentUserUid
+  );
+
   const renderSearchTab = () => (
     <View style={{ flex: 1 }}>
       <SearchBar
-        data={usersData}
+        data={filteredUsersData} // Użyj przefiltrowanej listy
         keysToSearch={["name", "email", "birthday"]}
         onResultsChange={handleResultsChange}
         placeholder="Search by name, email or birthday..."
@@ -123,6 +139,13 @@ export default function AddDetailsModal() {
             </TouchableOpacity>
           );
         }}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={[styles.emptyText, { color: textColor }]}>
+              No other users found
+            </Text>
+          </View>
+        }
       />
 
       {selectedItem && (
@@ -261,5 +284,15 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: "center",
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 50,
+  },
+  emptyText: {
+    fontSize: 16,
+    opacity: 0.7,
   },
 });
