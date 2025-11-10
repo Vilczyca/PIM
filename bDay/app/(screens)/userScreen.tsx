@@ -4,49 +4,96 @@ import { Fonts } from "@/constants/theme";
 import { useColors } from "@/hooks/use-colors";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { Stack, useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  ScrollView, StyleSheet,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
+  Alert,
 } from "react-native";
+import {
+  auth,
+  onAuthStateChanged,
+  signOut,
+  updateProfile,
+} from "@/constants/firebase";
 
 export default function UserScreen() {
   const colors = useColors();
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
 
-  const [name, setName] = useState("Person 1");
-const [birthday, setBirthday] = useState("01-01-2025");
-  const [phone, setPhone] = useState("");
+  // Dane użytkownika z Firebase
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [name, setName] = useState("");
+  const [birthday, setBirthday] = useState("01-01-2025");
   const [email, setEmail] = useState("");
 
+  // Tymczasowe wartości do edycji
   const [tempName, setTempName] = useState(name);
   const [tempBirthday, setTempBirthday] = useState(birthday);
-  const [tempPhone, setTempPhone] = useState(phone);
   const [tempEmail, setTempEmail] = useState(email);
 
   const tintColor = colors.tint;
 
-  const onLogout = () => {
-    router.replace("./loginScreen");
+  // Pobierz dane zalogowanego użytkownika
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setCurrentUser(user);
+        setName(user.displayName || "User");
+        setEmail(user.email || "");
+        setTempName(user.displayName || "User");
+        setTempEmail(user.email || "");
+      } else {
+        // Jeśli użytkownik nie jest zalogowany, wróć do logowania
+        router.replace("./loginScreen");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const onLogout = async () => {
+    try {
+      await signOut(auth);
+      router.replace("./loginScreen");
+    } catch (error) {
+      console.error("Error signing out: ", error);
+      Alert.alert("Error", "Failed to sign out");
+    }
   };
 
-  const onSave = () => {
-    setName(tempName);
-    setBirthday(tempBirthday);
-    setPhone(tempPhone);
-    setEmail(tempEmail);
-    setIsEditing(false);
-    console.log("saved:", tempName, tempBirthday, tempPhone, tempEmail);
+  const onSave = async () => {
+    try {
+      // Aktualizuj profil w Firebase
+      if (currentUser && tempName !== currentUser.displayName) {
+        await updateProfile(currentUser, {
+          displayName: tempName,
+        });
+      }
+
+      // Zaktualizuj lokalny stan
+      setName(tempName);
+      setBirthday(tempBirthday);
+      setEmail(tempEmail);
+      setIsEditing(false);
+
+      console.log("Profile updated:", tempName, tempBirthday, tempEmail);
+      Alert.alert("Success", "Profile updated successfully!");
+    } catch (error) {
+      console.error("Error updating profile: ", error);
+      Alert.alert("Error", "Failed to update profile");
+    }
   };
 
   const onCancelEdit = () => {
+    // Przywróć oryginalne wartości
     setTempName(name);
     setTempBirthday(birthday);
-    setTempPhone(phone);
     setTempEmail(email);
     setIsEditing(false);
   };
@@ -54,19 +101,16 @@ const [birthday, setBirthday] = useState("01-01-2025");
   const startEdit = () => {
     setTempName(name);
     setTempBirthday(birthday);
-    setTempPhone(phone);
     setTempEmail(email);
     setIsEditing(true);
   };
 
   const disabled = !isEditing;
 
-  
   const handleBirthdayChange = (text: string) => {
-    let digits = text.replace(/\D/g, ""); 
+    let digits = text.replace(/\D/g, "");
     if (digits.length > 8) digits = digits.slice(0, 8);
 
-  
     let formatted = digits;
     if (digits.length > 4) {
       formatted = `${digits.slice(0, 2)}-${digits.slice(2, 4)}-${digits.slice(
@@ -79,6 +123,23 @@ const [birthday, setBirthday] = useState("01-01-2025");
     setTempBirthday(formatted);
   };
 
+  // Jeśli użytkownik nie jest załadowany, pokaż loading
+  if (!currentUser) {
+    return (
+      <View
+        style={[
+          styles.root,
+          {
+            backgroundColor: colors.background,
+            justifyContent: "center",
+            alignItems: "center",
+          },
+        ]}
+      >
+        <Text style={{ color: colors.text }}>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <>
@@ -109,10 +170,10 @@ const [birthday, setBirthday] = useState("01-01-2025");
       />
 
       <View style={[styles.root, { backgroundColor: colors.background }]}>
-      <ScrollView nestedScrollEnabled contentContainerStyle={styles.container
-        
-      }>
-
+        <ScrollView
+          nestedScrollEnabled
+          contentContainerStyle={styles.container}
+        >
           <Text
             style={[
               styles.title,
@@ -122,7 +183,23 @@ const [birthday, setBirthday] = useState("01-01-2025");
             YOUR DETAILS
           </Text>
 
-          <Avatar name={name} size={200} style={{ marginVertical: 24 }} />
+          {/* Dodaj informację o emailu */}
+          {currentUser?.email && (
+            <Text
+              style={[
+                styles.subtitle,
+                { color: colors.text, fontFamily: Fonts.sans },
+              ]}
+            >
+              {currentUser.email}
+            </Text>
+          )}
+
+          <Avatar
+            name={isEditing ? tempName : name}
+            size={200}
+            style={{ marginVertical: 24 }}
+          />
 
           <View
             style={[styles.form, disabled && { opacity: 0.6 }]}
@@ -150,23 +227,8 @@ const [birthday, setBirthday] = useState("01-01-2025");
               editable={isEditing}
               selectTextOnFocus={isEditing}
               onChangeText={setTempName}
+              placeholder="Enter your name"
             />
-
-             <Text
-              style={[
-                styles.label,
-                { color: colors.text, marginTop: 18, fontFamily: Fonts.sans },
-              ]}
-            >
-              Birthday date
-            </Text>
-           
-             <View style={{ height: 200, justifyContent: "center" }}>
-    <Spinner
-      value={tempBirthday}
-      onChange={handleBirthdayChange}
-    />
-  </View> 
 
             <Text
               style={[
@@ -174,24 +236,12 @@ const [birthday, setBirthday] = useState("01-01-2025");
                 { color: colors.text, marginTop: 18, fontFamily: Fonts.sans },
               ]}
             >
-              Phone
+              Birthday date
             </Text>
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  color: colors.text,
-                  borderColor: colors.card,
-                  fontFamily: Fonts.sans,
-                },
-              ]}
-              keyboardType="phone-pad"
-              placeholder="Optional"
-              value={tempPhone}
-              editable={isEditing}
-              selectTextOnFocus={isEditing}
-              onChangeText={setTempPhone}
-            />
+
+            <View style={{ height: 200, justifyContent: "center" }}>
+              <Spinner value={tempBirthday} onChange={handleBirthdayChange} />
+            </View>
 
             <Text
               style={[
@@ -247,9 +297,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 100,
   },
-  title: { fontSize: 22, fontWeight: "800", marginTop: 64 },
-  form: { alignSelf: "stretch" },
-  label: { fontSize: 14, fontWeight: "700", marginBottom: 8 },
+  title: {
+    fontSize: 22,
+    fontWeight: "800",
+    marginTop: 64,
+  },
+  subtitle: {
+    fontSize: 16,
+    opacity: 0.7,
+    marginTop: 4,
+  },
+  form: {
+    alignSelf: "stretch",
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: "700",
+    marginBottom: 8,
+  },
   input: {
     height: 48,
     borderWidth: 1,

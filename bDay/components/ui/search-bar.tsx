@@ -1,4 +1,3 @@
-// components/SearchBar.tsx
 import React, { useState, useEffect } from "react";
 import { View, TextInput, StyleSheet } from "react-native";
 import { Feather } from "@expo/vector-icons";

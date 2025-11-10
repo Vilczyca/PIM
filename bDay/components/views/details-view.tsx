@@ -15,7 +15,6 @@ import {
   View,
 } from "react-native";
 
-
 import { CalendarRecord } from "@/constants/types";
 
 type Mode = "add" | "edit" | "view";
@@ -51,9 +50,7 @@ export function DetailsView({
 
   //saved state
   const [name, setName] = useState(initialData?.name ?? "Person 1");
-  const [birthday, setBirthday] = useState(
-    initialData?.date ?? "07-11-2025"
-  );
+  const [birthday, setBirthday] = useState(initialData?.date ?? "07-11-2025");
   const [phone, setPhone] = useState(initialData?.phone?.toString() ?? "");
   const [email, setEmail] = useState(initialData?.email ?? "");
 
@@ -127,12 +124,14 @@ export function DetailsView({
 
   useEffect(() => {
     const today = new Date();
-const formattedToday = today.toLocaleDateString("pl-PL", {
-  day: "2-digit",
-  month: "2-digit",
-  year: "numeric",
-}).replace(/\./g, "-"); 
-setTmpBirthday(formattedToday);
+    const formattedToday = today
+      .toLocaleDateString("pl-PL", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+      .replace(/\./g, "-");
+    setTmpBirthday(formattedToday);
 
     if (mode === "edit") {
       setTmpName(name);
@@ -152,12 +151,10 @@ setTmpBirthday(formattedToday);
     }
   }, [mode, name, birthday, phone, email]);
 
-
   const onBirthdayChange = (text: string) => {
-  
     let d = text.replace(/\D/g, "");
     if (d.length > 8) d = d.slice(0, 8);
-  
+
     let f = d;
     if (d.length > 4) f = `${d.slice(0, 2)}-${d.slice(2, 4)}-${d.slice(4)}`;
     else if (d.length > 2) f = `${d.slice(0, 2)}-${d.slice(2)}`;
@@ -170,7 +167,7 @@ setTmpBirthday(formattedToday);
     const data = {
       name: tmpName,
       date: tmpBirthday,
-     ...(isNaN(parseInt(tmpPhone)) ? {}: {phone : parseInt(tmpPhone)}),
+      ...(isNaN(parseInt(tmpPhone)) ? {} : { phone: parseInt(tmpPhone) }),
       email: tmpEmail,
     };
     if (mode === "add") {
@@ -185,7 +182,6 @@ setTmpBirthday(formattedToday);
     }
   };
 
-  
   const onCall = () => {
     if (!phone) return Alert.alert("Brak numeru telefonu");
     Linking.openURL(`tel:${phone}`);
@@ -315,13 +311,9 @@ setTmpBirthday(formattedToday);
             placeholder="Name"
           />
 
-
-             <View style={{ height: 200, justifyContent: "center" }}>
-                <Spinner
-                  value={tmpBirthday}
-                  onChange={onBirthdayChange}
-                />
-              </View>
+          <View style={{ height: 200, justifyContent: "center" }}>
+            <Spinner value={tmpBirthday} onChange={onBirthdayChange} />
+          </View>
           <Text
             style={[
               styles.label,

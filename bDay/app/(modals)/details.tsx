@@ -13,9 +13,9 @@ import { useColor } from "@/hooks/use-colors";
 import { DetailsView } from "@/components/views/details-view";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Fonts } from "@/constants/theme";
-import {insertMyHomie} from "@/components/database";
-import {CalendarRecord} from "@/constants/types";
-import {useFirebaseData} from "@/context/FirebaseDataContex";
+import { insertMyHomie } from "@/components/database";
+import { CalendarRecord } from "@/constants/types";
+import { useFirebaseData } from "@/context/FirebaseDataContex";
 
 export default function AddDetailsModal() {
   const router = useRouter();
@@ -26,7 +26,7 @@ export default function AddDetailsModal() {
   const card = useColor("card");
   const [activeTab, setActiveTab] = useState<"add" | "search">("add");
   const [selectedItem, setSelectedItem] = useState<any>(null);
-  const { calendarData, usersData,loading, refresh } = useFirebaseData();
+  const { calendarData, usersData, loading, refresh } = useFirebaseData();
   const [results, setResults] = useState(usersData);
 
   useLayoutEffect(() => {
@@ -47,15 +47,15 @@ export default function AddDetailsModal() {
   }, [navigation, router, tint]);
 
   const handleSaveAdd = (data: CalendarRecord) => {
-      const record = {
-          name: data.name,
-          date: data.date,
-          phone: data.phone,
-          email: data.email,
-      };
-      insertMyHomie(record);
-      refresh();
-      router.back();
+    const record = {
+      name: data.name,
+      date: data.date,
+      phone: data.phone,
+      email: data.email,
+    };
+    insertMyHomie(record);
+    refresh();
+    router.back();
   };
 
   const onSelectItem = (item: any) => {
@@ -159,7 +159,7 @@ export default function AddDetailsModal() {
   return (
     <View style={[styles.container, { backgroundColor: tabBackground }]}>
       {/* Zakładki */}
-      <View style={[styles.tabContainer]}>
+      <View style={[styles.tabContainer, { borderBottomColor: tabBackground }]}>
         <TouchableOpacity
           style={[
             styles.tab,

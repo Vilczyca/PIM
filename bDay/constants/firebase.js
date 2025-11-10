@@ -1,6 +1,22 @@
+// constants/firebase.ts
 import { initializeApp } from "firebase/app";
-import { createUserWithEmailAndPassword, getAuth, getRedirectResult, GoogleAuthProvider, signInWithCredential, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, signOut } from "firebase/auth";
+import { 
+  initializeAuth, 
+  getReactNativePersistence,
+  createUserWithEmailAndPassword, 
+  getAuth, 
+  getRedirectResult, 
+  GoogleAuthProvider, 
+  onAuthStateChanged,
+  signInWithCredential, 
+  signInWithEmailAndPassword, 
+  signInWithPopup, 
+  signInWithRedirect, 
+  signOut, 
+  updateProfile 
+} from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 const firebaseConfig = {
     apiKey: process.env.EXPO_PUBLIC_API_KEY,
@@ -13,8 +29,25 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
-export const auth = getAuth(app);
-export const provider = new GoogleAuthProvider();
-export { createUserWithEmailAndPassword, getRedirectResult, GoogleAuthProvider, signInWithCredential, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, signOut };
 
+// ZAINICJALIZUJ AUTH Z PERSISTENCE
+export const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+});
+
+export const db = getFirestore(app);
+export const provider = new GoogleAuthProvider();
+
+// Eksport wszystkich funkcji auth
+export { 
+  createUserWithEmailAndPassword, 
+  getRedirectResult, 
+  GoogleAuthProvider, 
+  onAuthStateChanged,
+  signInWithCredential, 
+  signInWithEmailAndPassword, 
+  signInWithPopup, 
+  signInWithRedirect, 
+  signOut, 
+  updateProfile 
+};

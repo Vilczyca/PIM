@@ -4,8 +4,8 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 type BdayCardProps = {
   id: string;
   name: string | null;
-  birthday: string |null;
-  avatar?: string; 
+  birthday: string | null;
+  avatar?: string;
   isBirthdayToday?: boolean;
   showDaysLeft?: boolean;
   onPress?: () => void;
@@ -19,45 +19,54 @@ export function BdayCard({
   showDaysLeft = true,
   onPress,
 }: BdayCardProps) {
+  const cardColor = useColor("card");
+  const cardColorBday = useColor("cardBday");
+  const textColor = useColor("text");
+  let daysLeft: number | null = null;
 
+  if (showDaysLeft && birthday) {
+    const today = new Date();
+    const [day, month, year] = birthday.split("-").map(Number);
+    let nextBday = new Date(today.getFullYear(), month - 1, day);
 
-const cardColor = useColor("card");
-const cardColorBday = useColor("cardBday");
-const textColor = useColor("text")
-let daysLeft: number | null = null;
+    today.setHours(0, 0, 0, 0);
+    nextBday.setHours(0, 0, 0, 0);
 
-if (showDaysLeft && birthday) { 
-  const today = new Date();
-  const [day, month, year] = birthday.split("-").map(Number);
-  let nextBday = new Date(today.getFullYear(), month - 1, day);
+    if (nextBday < today) {
+      nextBday.setFullYear(today.getFullYear() + 1);
+    }
 
-  today.setHours(0, 0, 0, 0);
-  nextBday.setHours(0, 0, 0, 0);
-
-  if (nextBday < today) {
-    nextBday.setFullYear(today.getFullYear() + 1);
+    daysLeft = Math.ceil(
+      (nextBday.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+    );
+  } else {
+    daysLeft = null;
   }
-
-  daysLeft = Math.ceil((nextBday.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-} else {
-  daysLeft = null; 
-}
 
   return (
     <TouchableOpacity
-      style={[styles.card, { backgroundColor: isBirthdayToday ? cardColorBday : cardColor, borderColor : cardColorBday }]}
+      style={[
+        styles.card,
+        {
+          backgroundColor: isBirthdayToday ? cardColorBday : cardColor,
+          borderColor: cardColorBday,
+        },
+      ]}
       onPress={onPress}
     >
       <View style={styles.row}>
-       <Avatar name={name ?? undefined} size={50} />
+        <Avatar name={name ?? undefined} size={50} />
 
         <View style={{ marginLeft: 12 }}>
           <Text style={[styles.name, { color: textColor }]}>
-            {name} {isBirthdayToday ? "🎉 " : ""} 
+            {name} {isBirthdayToday ? "🎉 " : ""}
           </Text>
-           <Text style={styles.date}>{birthday}</Text>
-          {daysLeft !== null && <Text style={styles.daysLeft}>{daysLeft===0 ? "Today": daysLeft+ " days left"}</Text> }
-         
+          <Text style={styles.date}>{birthday}</Text>
+          {daysLeft !== null && (
+            <Text style={styles.daysLeft}>
+              {daysLeft === 0 ? "Today" : daysLeft + " days left"}
+            </Text>
+          )}
         </View>
       </View>
     </TouchableOpacity>
@@ -70,23 +79,23 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 12,
     elevation: 2,
-    borderWidth:2
+    borderWidth: 2,
   },
   row: {
     flexDirection: "row",
-    alignItems: "center" 
+    alignItems: "center",
   },
-  
-  name: { 
+
+  name: {
     fontSize: 16,
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
-  date: { 
+  date: {
     fontSize: 14,
-    color: "#555"
+    color: "#555",
   },
   daysLeft: {
     fontSize: 12,
-    color: "#888"
+    color: "#888",
   },
 });
