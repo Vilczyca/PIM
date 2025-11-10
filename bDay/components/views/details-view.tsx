@@ -126,6 +126,14 @@ export function DetailsView({
   }, [initialData]); //eslint-disable-line
 
   useEffect(() => {
+    const today = new Date();
+const formattedToday = today.toLocaleDateString("pl-PL", {
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+}).replace(/\./g, "-"); 
+setTmpBirthday(formattedToday);
+
     if (mode === "edit") {
       setTmpName(name);
       setTmpBirthday(birthday);
@@ -133,7 +141,7 @@ export function DetailsView({
       setTmpEmail(email);
     } else if (mode === "add") {
       setTmpName("");
-      setTmpBirthday("");
+      setTmpBirthday(formattedToday);
       setTmpPhone("");
       setTmpEmail("");
     } else {
