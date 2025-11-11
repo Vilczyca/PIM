@@ -64,22 +64,22 @@ export default function CalendarScreen() {
     return marks;
   }, [today, selectedDate, calendarData, currentDayColor]);
 
+    const getDayMonth = (
+        dateStr: string,
+        format: "yyyy-mm-dd" | "dd-mm-yyyy"
+    ) => {
+        if (!dateStr) return { day: "", month: "" };
+        if (format === "yyyy-mm-dd") {
+            const [y, m, d] = dateStr.split("-");
+            return { day: d, month: m };
+        } else {
+            const [d, m, y] = dateStr.split("-");
+            return { day: d, month: m };
+        }
+    };
+
   const handleDayPress = (day: any) => {
     const clickedDate = day.dateString;
-
-    const getDayMonth = (
-      dateStr: string,
-      format: "yyyy-mm-dd" | "dd-mm-yyyy"
-    ) => {
-      if (!dateStr) return { day: "", month: "" };
-      if (format === "yyyy-mm-dd") {
-        const [y, m, d] = dateStr.split("-");
-        return { day: d, month: m };
-      } else {
-        const [d, m, y] = dateStr.split("-");
-        return { day: d, month: m };
-      }
-    };
 
     const clickedDM = getDayMonth(clickedDate, "yyyy-mm-dd");
 
@@ -114,11 +114,14 @@ export default function CalendarScreen() {
   useEffect(() => {
     if (!calendarData) return;
 
-    const todayParts = today.split("-");
-    const todayMD = todayParts[0] + " " + todayParts[1];
+    const todayDM = getDayMonth(today, "yyyy-mm-dd");
 
     const todayBdays = calendarData.filter(
-      (person) => person.date && person.date.slice(0, 5) === todayMD
+      (person:CalendarRecord) =>
+      {
+          const personDM = getDayMonth(person.date?person.date:"", "dd-mm-yyyy");
+          return personDM.day === todayDM.day && personDM.month === todayDM.month
+      }
     );
 
     setFilteredData(todayBdays);

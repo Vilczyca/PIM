@@ -43,7 +43,7 @@ export const FirebaseDataProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         fetchData().then();
-    }, [user, isLoading, fetchData]);
+    }, [user, isLoading]);
 
     return (
         <FirebaseDataContext.Provider value={{ calendarData: calendarData, usersData: usersData, loading, refresh: fetchData }}>
