@@ -139,8 +139,7 @@ export default function LoginScreen() {
           });
 
           // 2. Dodaj użytkownika do kolekcji registered_users
-          await addRegisteredUser({
-            uid: userCredential.user.uid,
+          await addRegisteredUser(userCredential.user.uid,{
             name: username,
             email: email,
             date: birthday,

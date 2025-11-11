@@ -3,15 +3,12 @@ import { initializeApp } from "firebase/app";
 import { 
   initializeAuth, 
   getReactNativePersistence,
-  createUserWithEmailAndPassword, 
-  getAuth, 
+  createUserWithEmailAndPassword,
   getRedirectResult, 
   GoogleAuthProvider, 
   onAuthStateChanged,
   signInWithCredential, 
-  signInWithEmailAndPassword, 
-  signInWithPopup, 
-  signInWithRedirect, 
+  signInWithEmailAndPassword,
   signOut, 
   updateProfile 
 } from "firebase/auth";
@@ -30,24 +27,19 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-// ZAINICJALIZUJ AUTH Z PERSISTENCE
 export const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage)
 });
 
 export const db = getFirestore(app);
-export const provider = new GoogleAuthProvider();
 
-// Eksport wszystkich funkcji auth
 export { 
   createUserWithEmailAndPassword, 
   getRedirectResult, 
   GoogleAuthProvider, 
   onAuthStateChanged,
   signInWithCredential, 
-  signInWithEmailAndPassword, 
-  signInWithPopup, 
-  signInWithRedirect, 
+  signInWithEmailAndPassword,
   signOut, 
   updateProfile 
 };

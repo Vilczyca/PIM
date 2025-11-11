@@ -20,7 +20,7 @@ import {
   signOut,
   updateProfile,
 } from "@/constants/firebase";
-import { getRegisteredUsers } from "@/components/database"; // Dodaj tę funkcję
+import {selectRegisteredUsers, updateUserInRegisteredUsers} from "@/components/database"; // Dodaj tę funkcję
 
 export default function UserScreen() {
   const colors = useColors();
@@ -52,8 +52,8 @@ export default function UserScreen() {
 
         // Pobierz datę urodzenia z kolekcji registered_users
         try {
-          const usersData = await getRegisteredUsers();
-          const currentUserData = usersData?.find((u) => u.uid === user.uid);
+          const usersData = await selectRegisteredUsers();
+          const currentUserData = usersData?.find((u) => u.id === user.uid);
 
           if (currentUserData?.date) {
             setBirthday(currentUserData.date);
@@ -106,19 +106,12 @@ export default function UserScreen() {
 
   const onSave = async () => {
     try {
-      // Aktualizuj profil w Firebase Auth
-      if (currentUser && tempName !== currentUser.displayName) {
-        await updateProfile(currentUser, {
-          displayName: tempName,
-        });
-      }
 
-      // Tutaj dodaj funkcję do aktualizacji danych w registered_users
-      // await updateUserInRegisteredUsers(currentUser.uid, {
-      //   name: tempName,
-      //   date: tempBirthday,
-      //   email: tempEmail
-      // });
+      await updateUserInRegisteredUsers(currentUser.uid, {
+        name: tempName,
+        date: tempBirthday,
+        email: tempEmail
+      });
 
       // Zaktualizuj lokalny stan
       setName(tempName);

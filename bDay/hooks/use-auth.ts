@@ -19,12 +19,6 @@ export const useAuth = () => {
   useEffect(() => {
     
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        console.log('✅ useAuth: User is signed in:', user.email);
-      } else {
-        console.log('❌ useAuth: No user signed in');
-      }
-      
       setUser(user);
       
       setTimeout(() => {

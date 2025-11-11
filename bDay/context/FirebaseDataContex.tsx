@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { CalendarRecord } from "@/constants/types";
 import {selectAllMyHomie, selectRegisteredUsers} from "@/components/database";
+import {useAuth} from "@/hooks/use-auth";
 
 interface FirebaseContextType {
     calendarData: CalendarRecord[];
@@ -18,35 +19,31 @@ const FirebaseDataContext = createContext<FirebaseContextType>({
 
 // Provider
 export const FirebaseDataProvider = ({ children }: { children: ReactNode }) => {
+    const { user, isLoading } = useAuth();
     const [calendarData, setCalendarData] = useState<CalendarRecord[]>([]);
     const [usersData, setUsersData] = useState<CalendarRecord[]>([]);
     const [loading, setLoading] = useState(true);
 
     const fetchData = async () => {
+        if (isLoading || !user) return;
         setLoading(true);
-        const result = await selectAllMyHomie();
-        if (result) {
-            setCalendarData(result);
-        }
 
-        const result2 = await selectRegisteredUsers();
-        if (result2) {
-            setUsersData(result2);
+        try {
+            const result = await selectAllMyHomie(user.uid);
+            if (result) setCalendarData(result);
+
+            const result2 = await selectRegisteredUsers();
+            if (result2) setUsersData(result2);
+        } catch (err) {
+            console.error("Błąd przy pobieraniu danych:", err);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     useEffect(() => {
-        let isMounted = true;
-
-        fetchData().then(() => {
-            if (!isMounted) return;
-        });
-
-        return () => {
-            isMounted = false;
-        };
-    }, []);
+        fetchData().then();
+    }, [user, isLoading, fetchData]);
 
     return (
         <FirebaseDataContext.Provider value={{ calendarData: calendarData, usersData: usersData, loading, refresh: fetchData }}>
