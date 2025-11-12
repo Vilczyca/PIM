@@ -22,6 +22,7 @@ import {
 } from "@/constants/firebase";
 import { selectAllMyHomie, addRegisteredUser } from "@/components/database";
 import { Spinner } from "@/components/ui/Spinner";
+import Button from "@/components/ui/button";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -139,7 +140,7 @@ export default function LoginScreen() {
           });
 
           // 2. Dodaj użytkownika do kolekcji registered_users
-          await addRegisteredUser(userCredential.user.uid,{
+          await addRegisteredUser(userCredential.user.uid, {
             name: username,
             email: email,
             date: birthday,
@@ -275,22 +276,9 @@ export default function LoginScreen() {
         ) : null}
 
         <View style={styles.buttonsContainer}>
-          <TouchableOpacity
-            style={[styles.bottomBtn, { backgroundColor: colors.tint }]}
-            onPress={handleAuth}
-            activeOpacity={0.85}
-          >
-            <Text
-              style={{
-                color: colors.background,
-                fontSize: 16,
-                fontWeight: "700",
-                fontFamily: Fonts.sans,
-              }}
-            >
-              {isLoginMode ? "LOGIN" : "SIGN UP"}
-            </Text>
-          </TouchableOpacity>
+          <Button type="special" style={styles.bottomBtn} onPress={handleAuth}>
+            {isLoginMode ? "LOGIN" : "SIGN UP"}
+          </Button>
 
           {/* Skip - tymczasowo wyłączony */}
           {/* <TouchableOpacity

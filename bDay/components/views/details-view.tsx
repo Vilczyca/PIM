@@ -16,6 +16,7 @@ import {
 } from "react-native";
 
 import { CalendarRecord } from "@/constants/types";
+import Button from "../ui/button";
 
 type Mode = "add" | "edit" | "view";
 
@@ -365,21 +366,9 @@ export function DetailsView({
       </ScrollView>
 
       {isEditing && (
-        <TouchableOpacity
-          style={[styles.bottomBtn, { backgroundColor: colors.tint }]}
-          onPress={onSave}
-        >
-          <Text
-            style={{
-              color: colors.background,
-              fontSize: 16,
-              fontWeight: "700",
-              fontFamily: Fonts.sans,
-            }}
-          >
-            Save
-          </Text>
-        </TouchableOpacity>
+        <Button style={styles.bottomBtn} onPress={onSave}>
+          Save
+        </Button>
       )}
     </View>
   );

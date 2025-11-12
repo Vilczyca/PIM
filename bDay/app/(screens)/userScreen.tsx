@@ -20,7 +20,11 @@ import {
   signOut,
   updateProfile,
 } from "@/constants/firebase";
-import {selectRegisteredUsers, updateUserInRegisteredUsers} from "@/components/database"; // Dodaj tę funkcję
+import {
+  selectRegisteredUsers,
+  updateUserInRegisteredUsers,
+} from "@/components/database"; // Dodaj tę funkcję
+import Button from "@/components/ui/button";
 
 export default function UserScreen() {
   const colors = useColors();
@@ -106,11 +110,10 @@ export default function UserScreen() {
 
   const onSave = async () => {
     try {
-
       await updateUserInRegisteredUsers(currentUser.uid, {
         name: tempName,
         date: tempBirthday,
-        email: tempEmail
+        email: tempEmail,
       });
 
       // Zaktualizuj lokalny stan
@@ -311,21 +314,13 @@ export default function UserScreen() {
           </View>
         </ScrollView>
 
-        <TouchableOpacity
-          style={[styles.bottomBtn, { backgroundColor: colors.tint }]}
+        <Button
+          type={isEditing ? "default" : "special"}
+          style={styles.bottomBtn}
           onPress={isEditing ? onSave : onLogout}
         >
-          <Text
-            style={{
-              color: colors.background,
-              fontSize: 16,
-              fontWeight: "700",
-              fontFamily: Fonts.sans,
-            }}
-          >
-            {isEditing ? "Save" : "Logout"}
-          </Text>
-        </TouchableOpacity>
+          {isEditing ? "Save" : "LOGOUT"}
+        </Button>
       </View>
     </>
   );

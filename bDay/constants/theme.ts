@@ -6,11 +6,13 @@
 import { Platform } from 'react-native';
 
 const primary = '#ff9cb5'
+const onPrimary = '#fff'
+
 
 const tintColorLight = primary;
-const tintColorDark = '#fff';
+const tintColorDark = primary;
 const primaryLight = "#000";
-const primaryDark = primary;
+const primaryDark = "#fff"
 const onPrimaryLight = "#fff";
 const onPrimaryDark = "#000";
 const iconLight = '#687076';
@@ -32,6 +34,9 @@ export const Colors = {
     buttonColor: primaryLight,
     buttonTextColor: onPrimaryLight,
 
+    specialButtonColor: primary,
+    specialButtonTextColor: onPrimaryLight,
+
     card: accentLight,
     cardBday: tintColorLight,
     calendarToday:  tintColorLight
@@ -46,8 +51,11 @@ export const Colors = {
     tabIconDefault: iconDark,
     tabIconSelected: tintColorDark,
 
-    buttonColor: primaryDark,
-    buttonTextColor: onPrimaryDark,
+    buttonColor: primary,
+    buttonTextColor: onPrimary,
+
+    specialButtonColor: primaryDark,
+    specialButtonTextColor: onPrimaryDark,
 
     card: accentDark,
     cardBday: primaryDark,
