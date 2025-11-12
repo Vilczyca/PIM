@@ -6,6 +6,7 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 import { HapticTab } from "@/components/haptic-tab";
 import { useColor } from "@/hooks/use-colors";
 import Toast from "react-native-toast-message";
+import {OpenInGoogleCalendar} from "@/components/open-in-google-calendar";
 
 export default function TabLayout() {
   const tintColor = useColor("tint");
@@ -32,23 +33,10 @@ export default function TabLayout() {
           </TouchableOpacity>
         ),
 
-        headerRight: () => (
-          <TouchableOpacity
-            onPress={() => {
-              console.log("Export pressed");
-              Toast.show({
-                type: "info", // 'success' | 'error' | 'info'
-                text1: "Export",
-                text2: "Tu kiedyś będzie eksportowanie do kalendarza",
-                position: "bottom",
-                visibilityTime: 3000,
-              });
-            }}
-            style={{ marginRight: 16 }}
-          >
-            <Feather name="share" size={24} color={tintColor} />
-          </TouchableOpacity>
-        ),
+          headerRight: () => (
+              <TouchableOpacity>
+              </TouchableOpacity>
+          ),
       }}
     >
       <Tabs.Screen

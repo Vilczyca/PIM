@@ -12,6 +12,7 @@ export default function ModalsLayout() {
     <Stack
       screenOptions={{
         headerShown: true,
+          headerTitleAlign: "center",
       }}
     >
       <Stack.Screen
@@ -22,26 +23,6 @@ export default function ModalsLayout() {
       <Stack.Screen
         name="detailsScreen"
         // options jest ustawione w detailsScreen bo jest dynamiczne
-
-        // options={{
-        //   title: "Szczegóły",
-        //   headerLeft: () => (
-        //     <TouchableOpacity
-        //       onPress={() => router.back()}
-        //       style={{ marginLeft: 16 }}
-        //     >
-        //       <Ionicons name="arrow-back" size={24} color={tintColor} />
-        //     </TouchableOpacity>
-        //   ),
-        //   headerRight: () => (
-        //     <TouchableOpacity
-        //       onPress={() => console.log("Edytuj kliknięte")}
-        //       style={{ marginRight: 16 }}
-        //     >
-        //       <Feather name="edit" size={22} color={tintColor} />
-        //     </TouchableOpacity>
-        //   ),
-        // }}
       />
 
     <Stack.Screen

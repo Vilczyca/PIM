@@ -6,8 +6,9 @@ import { useColor } from "@/hooks/use-colors";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
-import { useEffect, useLayoutEffect, useState } from "react";
-import { ActivityIndicator, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import { ActivityIndicator, TouchableOpacity, View, Text } from "react-native";
+import {OpenInGoogleCalendar} from "@/components/open-in-google-calendar";
 
 export default function DetailsScreen() {
   const { id } = useLocalSearchParams();
@@ -15,8 +16,11 @@ export default function DetailsScreen() {
 
   const [mode, setMode] = useState<"view" | "edit" | "add">("view");
   const [initialData, setInitialData] = useState<CalendarRecord | undefined>(
-    undefined
+      undefined
   );
+const [dataCopy, setDataCopy] = useState<CalendarRecord | undefined>(
+    undefined
+);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | undefined>(undefined);
 
@@ -32,22 +36,13 @@ export default function DetailsScreen() {
 
     let cancelled = false;
 
-    const toDDMMYYYY = (iso: string) => {
-      //bezpieczna konwersja iso->dd-mm-rrrr
-      const d = new Date(iso);
-      if (isNaN(d.getTime())) return iso;
-      const dd = String(d.getDate()).padStart(2, "0");
-      const mm = String(d.getMonth() + 1).padStart(2, "0");
-      const yyyy = d.getFullYear();
-      return `${dd}-${mm}-${yyyy}`;
-    };
-
     const load = async () => {
       try {
         setLoading(true);
         setErr(undefined);
         const person = calendarData.find(x => x.id === parsedId)
         if (!cancelled) setInitialData(person);
+        setDataCopy(person);
       } catch (e: any) {
         if (!cancelled) setErr(e?.message ?? "load error");
       } finally {
@@ -55,40 +50,55 @@ export default function DetailsScreen() {
       }
     };
 
-    load();
+    load().then();
+
     return () => {
       cancelled = true;
     };
-  }, [parsedId]);
+  }, [calendarData, parsedId]);
 
   useLayoutEffect(() => {
     const isEditing = mode === "edit";
     navigation.setOptions({
-      title: isEditing ? "Edit" : "Details",
+        headerTitle: isEditing ? "Edit" : "Details",
+
       headerRight: () => (
-        <TouchableOpacity
-          onPress={() => setMode(isEditing ? "view" : "edit")}
-          style={{ marginRight: 16 }}
-        >
-          {isEditing ? (
-            <Feather name="x" size={22} color={tintColor} />
-          ) : (
-            <Feather name="edit" size={22} color={tintColor} />
-          )}
-        </TouchableOpacity>
+          <View style={{ flexDirection: "row", width: 68, justifyContent: "flex-end"}}>
+              <TouchableOpacity
+                      onPress={() => OpenInGoogleCalendar(dataCopy)}
+                      style={{ marginRight: 6 }}
+                  >
+                      {!isEditing &&(
+                      <Feather name="share" size={24} color={tintColor} />
+                      )}
+                  </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setMode(isEditing ? "view" : "edit")}
+              style={{ marginRight: 16 }}
+            >
+              {isEditing ? (
+                <Feather name="x" size={22} color={tintColor} />
+              ) : (
+                <Feather name="edit" size={22} color={tintColor} />
+              )}
+            </TouchableOpacity>
+          </View>
       ),
-      headerLeft: () =>
-        isEditing ? null : (
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={{ marginLeft: 16 }}
-          >
-            <Ionicons name="arrow-back" size={24} color={tintColor} />
-          </TouchableOpacity>
+        headerLeft: () => (
+            <View style={{ flexDirection: "row", width: 68}}>
+                <TouchableOpacity
+                    onPress={() => navigation.goBack()}
+                    style={{ marginLeft: 16 }}
+                >
+                    {!isEditing && (
+                    <Ionicons name="arrow-back" size={24} color={tintColor} />
+                        )}
+                </TouchableOpacity>
+            </View>
         ),
       gestureEnabled: !isEditing,
     });
-  }, [mode, navigation, tintColor]);
+  }, [dataCopy, mode, navigation, tintColor]);
 
   const handleSaveEdit = (data: CalendarRecord) => {
       if( initialData) {
