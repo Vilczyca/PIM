@@ -17,10 +17,10 @@ export const OfflineIcon = () => {
 const styles = StyleSheet.create({
     banner: {
         position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
+        top: 35,
+        right: 100,
         height: 40,
+        width: 40,
         justifyContent: "center",
         alignItems: "center",
         zIndex: 1000,
