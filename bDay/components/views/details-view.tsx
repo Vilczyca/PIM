@@ -310,8 +310,16 @@ export function DetailsView({
             value={tmpName}
             onChangeText={setTmpName}
             placeholder="Name"
+            placeholderTextColor={colors.text}
           />
-
+ <Text
+              style={[
+                styles.label,
+                { color: colors.text, marginTop: 18, fontFamily: Fonts.sans },
+              ]}
+            >
+              Birthday date
+            </Text>
           <View style={{ height: 200, justifyContent: "center" }}>
             <Spinner value={tmpBirthday} onChange={onBirthdayChange} />
           </View>
@@ -337,6 +345,7 @@ export function DetailsView({
             placeholder={placeholderOpt}
             value={tmpPhone}
             onChangeText={setTmpPhone}
+            placeholderTextColor={colors.text}
           />
 
           <Text
@@ -361,6 +370,7 @@ export function DetailsView({
             placeholder={placeholderOpt}
             value={tmpEmail}
             onChangeText={setTmpEmail}
+            placeholderTextColor={colors.text}
           />
         </View>
       </ScrollView>
