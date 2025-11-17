@@ -109,7 +109,7 @@ export default function CalendarScreen() {
         birthday={item.date}
         isBirthdayToday={daysUntilBirthday(item.date) === 0}
         showDaysLeft={!selectedDate}
-        colors={colors} 
+        // colors={colors} 
         onPress={() => router.push({
           pathname: "/(screens)/detailsScreen",
           params: { id: item.id, mode: "view" },

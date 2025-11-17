@@ -5,19 +5,19 @@ Tytuł roboczy: *“What's Your Homie bDay”*.
 
 ## Kluczowe funkcjonalności
 
-- [ ] Logowanie za pomocą konta **Google**
-- [ ] Przegląd urodzin w wygodnych widokach:
+- [X] Logowanie i zakładanie konta
+- [X] Przegląd urodzin w wygodnych widokach:
   - **Kalendarz** – lista urodzin na dany dzień
   - **Karty** – przegląd najbliższych urodzin
-- [ ] Intuicyjne dodawanie, edytowanie i usuwanie danych osób
-- [ ] Integracja z **Firebase** w celu przechowywania danych użytkowników
-
+- [X] Intuicyjne dodawanie i edytowanie danych osób
+- [X] Integracja z **Firebase** w celu przechowywania danych użytkowników
+- [X] Tryb jasny i ciemny
 
 ## Mockupy
 
 ### Widok logowania
 
-Ekran odpowiedzialny za logowanie za pomocą konta Google.
+Ekran odpowiedzialny za logowanie za pomocą konta.
 
 <p align="center">
   <img src="mockups/login_first.png" alt="Ekran logowania po raz pierwszy" height="300"/>
