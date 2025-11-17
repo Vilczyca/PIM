@@ -2,34 +2,39 @@ import { AddBdayButton } from "@/components/ui/add-bday-button";
 import { BdayCard } from "@/components/ui/BdayCard";
 import { CalendarRecord } from "@/constants/types";
 import { useFirebaseData } from "@/context/FirebaseDataContex";
-import { useColor } from "@/hooks/use-colors";
-
+import { useColors } from "@/hooks/use-colors";
 import { useRouter } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { Calendar } from "react-native-calendars";
 
 export default function CalendarScreen() {
   const router = useRouter();
-  const bgColor = useColor("background");
-  const cardColor = useColor("card");
-  const textColor = useColor("text");
-  const currentDayColor = useColor("calendarToday");
+  const colors = useColors();
   const { calendarData, loading, refresh } = useFirebaseData();
+  const [key, setKey] = useState(0); // Klucz do wymuszenia przerenderowania
 
   const today = new Date().toISOString().split("T")[0];
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [filteredData, setFilteredData] = useState<CalendarRecord[]>([]);
 
-  const calendarTheme = {
-    arrowColor: textColor,
-    backgroundColor: bgColor,
-    calendarBackground: bgColor,
-    textSectionTitleColor: textColor,
-    todayTextColor: currentDayColor,
-    dayTextColor: textColor,
-    monthTextColor: textColor,
-  };
+  // Resetuj klucz gdy zmienią się kolory
+  useEffect(() => {
+    setKey(prev => prev + 1);
+  }, [colors.background, colors.text, colors.tint]);
+
+  const calendarTheme = useMemo(() => ({
+    arrowColor: colors.tint,
+    backgroundColor: colors.background,
+    calendarBackground: colors.background,
+    textSectionTitleColor: colors.text,
+    todayTextColor: colors.text,
+    dayTextColor: colors.text,
+    monthTextColor: colors.text,
+    textDisabledColor: colors.text + '80',
+    selectedDayBackgroundColor: colors.tint,
+    selectedDayTextColor: colors.background,
+  }), [colors]);
 
   const getMarkedDates = useMemo(() => {
     const marks: any = {};
@@ -44,25 +49,31 @@ export default function CalendarScreen() {
         2,
         "0"
       )}-${dayStr.padStart(2, "0")}`;
-      marks[thisYearBday] = { marked: true, dotColor: currentDayColor };
+      marks[thisYearBday] = { marked: true, dotColor: colors.tint };
     });
 
-    marks[today] = {
-      ...marks[today],
-      selected: true,
-      selectedColor: currentDayColor,
-    };
+    // Jeśli dzisiejsza data NIE jest zaznaczona
+    if (!selectedDate || selectedDate !== today) {
+      marks[today] = {
+        ...marks[today],
+        selected: true,
+        selectedColor: colors.card,
+        selectedTextColor: colors.text,
+      };
+    }
 
+    // Jeśli jest zaznaczona data (może być dzisiaj lub inny dzień)
     if (selectedDate) {
       marks[selectedDate] = {
         ...marks[selectedDate],
         selected: true,
-        selectedColor: "#d3d3d3",
+        selectedColor: colors.tint,
+        selectedTextColor: colors.background,
       };
     }
 
     return marks;
-  }, [today, selectedDate, calendarData, currentDayColor]);
+  }, [today, selectedDate, calendarData, colors]);
 
   const getDayMonth = (
     dateStr: string,
@@ -171,15 +182,16 @@ export default function CalendarScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: bgColor }]}>
-      <View style={[styles.topContainer, { backgroundColor: cardColor }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.topContainer, { backgroundColor: colors.background }]}>
         <Calendar
+          key={key} // Wymusza przerenderowanie przy zmianie motywu
           style={{
             width: "100%",
             borderWidth: 1,
-            borderColor: bgColor,
+            borderColor: colors.card,
             height: 350,
-            backgroundColor: bgColor,
+            backgroundColor: colors.background,
           }}
           theme={calendarTheme}
           onDayPress={handleDayPress}
@@ -189,8 +201,8 @@ export default function CalendarScreen() {
           markedDates={getMarkedDates}
         />
       </View>
-      <View style={styles.infoBox}>
-        <Text style={styles.infoText}>
+      <View style={[styles.infoBox, { backgroundColor: colors.card }]}>
+        <Text style={[styles.infoText, { color: colors.text }]}>
           {filteredData.length > 0
             ? `🎉 There ${filteredData.length === 1 ? "is" : "are"} ${
                 filteredData.length
@@ -205,7 +217,7 @@ export default function CalendarScreen() {
         contentContainerStyle={{ padding: 16 }}
         style={styles.bottomContainer}
         ListEmptyComponent={
-          <Text style={[styles.noData, { color: textColor }]}>
+          <Text style={[styles.noData, { color: colors.text }]}>
             No birthdays on {selectedDate || today} 🎈
           </Text>
         }
@@ -215,6 +227,7 @@ export default function CalendarScreen() {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -238,13 +251,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginVertical: 8,
     borderRadius: 12,
-    backgroundColor: "#f5f5f5",
     alignItems: "center",
     elevation: 2,
   },
   infoText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#333",
   },
 });

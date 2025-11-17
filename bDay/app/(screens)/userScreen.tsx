@@ -279,11 +279,9 @@ export default function UserScreen() {
               Birthday date
             </Text>
 
-            <View style={{ height: 200, justifyContent: "center" }}>
               <Spinner value={tempBirthday} onChange={handleBirthdayChange} />
-            </View>
 
-            <Text style={[styles.hint, { color: colors.text }]}>
+            <Text style={[styles.hint, { marginTop: 18, color: colors.text }]}>
               Format: DD-MM-YYYY
             </Text>
 

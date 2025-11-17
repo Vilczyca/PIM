@@ -58,7 +58,7 @@ export const Colors = {
     specialButtonTextColor: onPrimaryDark,
 
     card: accentDark,
-    cardBday: primaryDark,
+    cardBday: tintColorDark,
     calendarToday: primaryDark
   },
 };
