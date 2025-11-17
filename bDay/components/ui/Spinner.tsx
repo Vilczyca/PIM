@@ -1,4 +1,4 @@
-import { useColors } from "@/hooks/use-colors";
+import { useTheme } from "@/context/ThemeContext";
 import React, { useEffect, useRef, useState } from "react";
 import { NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, Text, View } from "react-native";
 
@@ -11,7 +11,7 @@ type SpinnerProps = {
 };
 
 export function Spinner({ value = "01-01-2025", onChange }: SpinnerProps) {
-  const colors = useColors();
+   const { colors } = useTheme();
   
   const parseDate = (val: string) => {
     const [d, m, y] = val.split("-").map(Number);

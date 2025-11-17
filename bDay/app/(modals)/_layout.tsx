@@ -1,4 +1,4 @@
-import { useColor } from "@/hooks/use-colors";
+import { useTheme } from "@/context/ThemeContext";
 import { Feather } from "@expo/vector-icons";
 import { Stack, useRouter } from "expo-router";
 import { TouchableOpacity } from "react-native";
@@ -9,7 +9,7 @@ export const unstable_settings = {
 
 export default function ModalsLayout() {
   const router = useRouter();
-  const tintColor = useColor("tint");
+     const { colors } = useTheme();
 
   return (
     <Stack>
@@ -21,12 +21,19 @@ export default function ModalsLayout() {
           animation: "slide_from_bottom",
 
           headerTitle: "Add birthday",
+          headerTitleStyle: {
+                      color: colors.text, 
+                      
+                    },
+                     headerStyle: {
+                     backgroundColor: colors.background, 
+                    },
           headerRight: () => (
             <TouchableOpacity
               onPress={() => router.back()}
               style={{ marginRight: 16 }}
             >
-              <Feather name="x" size={22} color={tintColor} />
+              <Feather name="x" size={22} color={colors.tint} />
             </TouchableOpacity>
           ),
           headerLeft: () => null, // brak back

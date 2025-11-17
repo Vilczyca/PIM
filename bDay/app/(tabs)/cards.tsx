@@ -8,7 +8,7 @@ import {
   View
 } from "react-native";
 
-
+import { useTheme } from "@/context/ThemeContext";
 import { BdayCard } from "@/components/ui/BdayCard";
 
 import { CalendarRecord } from "@/constants/types";
@@ -19,9 +19,7 @@ import { SectionList } from "react-native";
 
 export default function CardsScreen() {
   const router = useRouter();
-  const bgColor = useColor("background");
-  const cardColor = useColor("card");
-  const textColor = useColor("text");
+    const { colors } = useTheme(); // Pobieramy kolory z ThemeContext
   const { calendarData, loading, refresh } = useFirebaseData();
 
   
@@ -87,7 +85,7 @@ const sections = useMemo(() => {
   };
 
  return (
-    <View style={[styles.container, { backgroundColor: bgColor }]}>
+    <View style={[styles.container, { backgroundColor:  colors.background }]}>
       <SectionList
         sections={sections}
         keyExtractor={(item) => item.id}
@@ -100,13 +98,14 @@ const sections = useMemo(() => {
             avatar={item.avatar}
             showDaysLeft={true}
             isBirthdayToday={daysUntilBirthday(item.date ?? "") === 0}
-
+            backgroundColor={colors.card} 
+            textColor={colors.text}       
 
             onPress={() => handlePress(item.id)}
           />
         )}
         renderSectionHeader={({ section: { title } }) => (
-          <Text style={[styles.header, { color: textColor }]}>{title}</Text>
+          <Text style={[styles.header, { color: colors.text }]}>{title}</Text>
         )}
       />
 

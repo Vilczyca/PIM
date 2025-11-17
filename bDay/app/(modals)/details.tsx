@@ -9,7 +9,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useNavigation } from "@react-navigation/native";
-import { useColor } from "@/hooks/use-colors";
+import { useTheme } from "@/context/ThemeContext";
 import { DetailsView } from "@/components/views/details-view";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Fonts } from "@/constants/theme";
@@ -21,15 +21,15 @@ import { auth } from "@/constants/firebase"; // Dodaj import auth
 export default function AddDetailsModal() {
   const router = useRouter();
   const navigation = useNavigation();
-  const tint = useColor("tint");
-  const textColor = useColor("text");
-  const tabBackground = useColor("background");
-  const card = useColor("card");
+  // const tint = useColor("tint");
+  // const textColor = useColor("text");
+  // const tabBackground = useColor("background");
+  // const card = useColor("card");
   const [activeTab, setActiveTab] = useState<"add" | "search">("add");
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const { calendarData, usersData, loading, refresh } = useFirebaseData();
   const [results, setResults] = useState(usersData);
-
+  const { colors } = useTheme();
   // Pobierz UID aktualnie zalogowanego użytkownika
   const currentUserUid = auth.currentUser?.uid;
 
@@ -42,13 +42,13 @@ export default function AddDetailsModal() {
           onPress={() => router.back()}
           style={{ marginRight: 16 }}
         >
-          <Feather name="x" size={22} color={tint} />
+          <Feather name="x" size={22} color={colors.tint} />
         </TouchableOpacity>
       ),
       gestureEnabled: false,
       presentation: "modal",
     });
-  }, [navigation, router, tint]);
+  }, [navigation, router, colors.tint]);
 
   const handleSaveAdd = (data: CalendarRecord) => {
     const record = {
@@ -102,6 +102,7 @@ export default function AddDetailsModal() {
         keysToSearch={["name", "email", "birthday"]}
         onResultsChange={handleResultsChange}
         placeholder="Search by name, email or birthday..."
+        style={{ backgroundColor: colors.card }} 
       />
 
       <FlatList
@@ -114,24 +115,24 @@ export default function AddDetailsModal() {
               style={[
                 styles.item,
                 {
-                  borderColor: isSelected ? tint : card,
+                  borderColor: isSelected ? colors.tint : colors.card,
                   borderWidth: isSelected ? 2 : 1,
                 },
               ]}
               onPress={() => onSelectItem(item)}
             >
-              <Text style={[styles.itemName, { color: textColor }]}>
+              <Text style={[styles.itemName, { color: colors.text }]}>
                 {item.name}
               </Text>
               <Text
-                style={[styles.itemEmail, { color: textColor, opacity: 0.7 }]}
+                style={[styles.itemEmail, { color: colors.text , opacity: 0.7 }]}
               >
                 {item.email}
               </Text>
               <Text
                 style={[
                   styles.itemBirthday,
-                  { color: textColor, opacity: 0.7 },
+                  { color: colors.text , opacity: 0.7 },
                 ]}
               >
                 {item.date}
@@ -141,7 +142,7 @@ export default function AddDetailsModal() {
         }}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={[styles.emptyText, { color: textColor }]}>
+            <Text style={[styles.emptyText, { color: colors.text  }]}>
               No other users found
             </Text>
           </View>
@@ -150,12 +151,12 @@ export default function AddDetailsModal() {
 
       {selectedItem && (
         <TouchableOpacity
-          style={[styles.bottomBtn, { backgroundColor: tint }]}
+          style={[styles.bottomBtn, { backgroundColor: colors.tint }]}
           onPress={onSave}
         >
           <Text
             style={{
-              color: tabBackground,
+              color: colors.background,
               fontSize: 16,
               fontWeight: "700",
               fontFamily: Fonts.sans,
@@ -180,15 +181,15 @@ export default function AddDetailsModal() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: tabBackground }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Zakładki */}
-      <View style={[styles.tabContainer, { borderBottomColor: tabBackground }]}>
+      <View style={[styles.tabContainer, { borderBottomColor: colors.background}]}>
         <TouchableOpacity
           style={[
             styles.tab,
             activeTab === "add" && [
               styles.activeTab,
-              { borderBottomColor: tint },
+              { borderBottomColor: colors.tint },
             ],
           ]}
           onPress={() => setActiveTab("add")}
@@ -196,8 +197,8 @@ export default function AddDetailsModal() {
           <Text
             style={[
               styles.tabText,
-              { color: textColor },
-              activeTab === "add" && [styles.activeTabText, { color: tint }],
+              { color: colors.text  },
+              activeTab === "add" && [styles.activeTabText, { color: colors.tint }],
             ]}
           >
             Add
@@ -209,7 +210,7 @@ export default function AddDetailsModal() {
             styles.tab,
             activeTab === "search" && [
               styles.activeTab,
-              { borderBottomColor: tint },
+              { borderBottomColor: colors.tint },
             ],
           ]}
           onPress={() => setActiveTab("search")}
@@ -217,8 +218,8 @@ export default function AddDetailsModal() {
           <Text
             style={[
               styles.tabText,
-              { color: textColor },
-              activeTab === "search" && [styles.activeTabText, { color: tint }],
+              { color: colors.text  },
+              activeTab === "search" && [styles.activeTabText, { color: colors.tint }],
             ]}
           >
             Search

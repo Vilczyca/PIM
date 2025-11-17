@@ -1,6 +1,7 @@
 import { Avatar } from "@/components/ui/avatar";
 import { useColor } from "@/hooks/use-colors";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useTheme } from "@/context/ThemeContext";
 type BdayCardProps = {
   id: string;
   name: string | null;
@@ -19,10 +20,9 @@ export function BdayCard({
   showDaysLeft = true,
   onPress,
 }: BdayCardProps) {
-  const cardColor = useColor("card");
-  const cardColorBday = useColor("cardBday");
-  const textColor = useColor("text");
+ 
   let daysLeft: number | null = null;
+  const { colors } = useTheme();
 
   if (showDaysLeft && birthday) {
     const today = new Date();
@@ -48,8 +48,8 @@ export function BdayCard({
       style={[
         styles.card,
         {
-          backgroundColor: isBirthdayToday ? cardColorBday : cardColor,
-          borderColor: cardColorBday,
+          backgroundColor: isBirthdayToday ? colors.cardBday : colors.card,
+          borderColor: colors.cardBday,
         },
       ]}
       onPress={onPress}
@@ -58,7 +58,7 @@ export function BdayCard({
         <Avatar name={name ?? undefined} size={50} />
 
         <View style={{ marginLeft: 12 }}>
-          <Text style={[styles.name, { color: textColor }]}>
+          <Text style={[styles.name, { color: colors.text }]}>
             {name} {isBirthdayToday ? "🎉 " : ""}
           </Text>
           <Text style={styles.date}>{birthday}</Text>

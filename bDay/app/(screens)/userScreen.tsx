@@ -1,7 +1,7 @@
 import { Avatar } from "@/components/ui/avatar";
 import { Spinner } from "@/components/ui/Spinner";
 import { Fonts } from "@/constants/theme";
-import { useColors } from "@/hooks/use-colors";
+import { useTheme } from "@/context/ThemeContext";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { Stack, useRouter } from "expo-router";
 import React, { useState, useEffect } from "react";
@@ -23,11 +23,11 @@ import {
 import {
   selectRegisteredUsers,
   updateUserInRegisteredUsers,
-} from "@/components/database"; // Dodaj tę funkcję
+} from "@/components/database"; 
 import Button from "@/components/ui/button";
 
 export default function UserScreen() {
-  const colors = useColors();
+  const { colors } = useTheme();
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
 
@@ -42,7 +42,7 @@ export default function UserScreen() {
   const [tempBirthday, setTempBirthday] = useState(birthday);
   const [tempEmail, setTempEmail] = useState(email);
 
-  const tintColor = colors.tint;
+
 
   // Pobierz dane zalogowanego użytkownika
   useEffect(() => {
@@ -186,12 +186,19 @@ export default function UserScreen() {
       <Stack.Screen
         options={{
           title: "User profile",
-          headerLeft: () => (
+          headerTitleStyle: {
+            color: colors.text, 
+            fontFamily: Fonts.sans,
+          },
+           headerStyle: {
+           backgroundColor: colors.background, // tło headera dopasowane do motywu
+          },
+            headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.back()}
               style={{ marginLeft: 16 }}
             >
-              <Ionicons name="arrow-back" size={24} color={tintColor} />
+              <Ionicons name="arrow-back" size={24} color={colors.tint} />
             </TouchableOpacity>
           ),
           headerRight: () => (
@@ -200,9 +207,9 @@ export default function UserScreen() {
               style={{ marginRight: 16 }}
             >
               {isEditing ? (
-                <Feather name="x" size={22} color={tintColor} />
+                <Feather name="x" size={22} color={colors.tint} />
               ) : (
-                <Feather name="edit-3" size={22} color={tintColor} />
+                <Feather name="edit-3" size={22} color={colors.tint} />
               )}
             </TouchableOpacity>
           ),

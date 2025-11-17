@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, TextInput, StyleSheet } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { useColor } from "@/hooks/use-colors";
+import { useTheme } from "@/context/ThemeContext";
 
 interface SearchBarProps<T> {
   data: T[];
@@ -16,12 +16,7 @@ export function SearchBar<T extends Record<string, any>>({
   onResultsChange,
   placeholder = "Search...",
 }: SearchBarProps<T>) {
-  const colors = {
-    background: useColor("background"),
-    text: useColor("text"),
-    card: useColor("card"),
-    tint: useColor("tint"),
-  };
+    const { colors } = useTheme();
 
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<T[]>(data);

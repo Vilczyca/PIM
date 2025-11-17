@@ -2,7 +2,7 @@ import { updateMyHomie } from "@/components/database";
 import { DetailsView } from "@/components/views/details-view";
 import { CalendarRecord } from "@/constants/types";
 import { useFirebaseData } from "@/context/FirebaseDataContex";
-import { useColor } from "@/hooks/use-colors";
+import { useTheme } from "@/context/ThemeContext";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
@@ -23,8 +23,8 @@ const [dataCopy, setDataCopy] = useState<CalendarRecord | undefined>(
 );
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | undefined>(undefined);
+  const { colors } = useTheme();
 
-  const tintColor = useColor("tint");
   const navigation = useNavigation();
 
 
@@ -69,7 +69,7 @@ const [dataCopy, setDataCopy] = useState<CalendarRecord | undefined>(
                       style={{ marginRight: 6 }}
                   >
                       {!isEditing &&(
-                      <Feather name="share" size={24} color={tintColor} />
+                      <Feather name="share" size={24} color={colors.tint} />
                       )}
                   </TouchableOpacity>
             <TouchableOpacity
@@ -77,9 +77,9 @@ const [dataCopy, setDataCopy] = useState<CalendarRecord | undefined>(
               style={{ marginRight: 16 }}
             >
               {isEditing ? (
-                <Feather name="x" size={22} color={tintColor} />
+                <Feather name="x" size={22} color={colors.tint} />
               ) : (
-                <Feather name="edit" size={22} color={tintColor} />
+                <Feather name="edit" size={22} color={colors.tint} />
               )}
             </TouchableOpacity>
           </View>
@@ -91,14 +91,14 @@ const [dataCopy, setDataCopy] = useState<CalendarRecord | undefined>(
                     style={{ marginLeft: 16 }}
                 >
                     {!isEditing && (
-                    <Ionicons name="arrow-back" size={24} color={tintColor} />
+                    <Ionicons name="arrow-back" size={24} color={colors.tint} />
                         )}
                 </TouchableOpacity>
             </View>
         ),
       gestureEnabled: !isEditing,
     });
-  }, [dataCopy, mode, navigation, tintColor]);
+  }, [dataCopy, mode, navigation, colors.tint]);
 
   const handleSaveEdit = (data: CalendarRecord) => {
       if( initialData) {
@@ -115,7 +115,7 @@ const [dataCopy, setDataCopy] = useState<CalendarRecord | undefined>(
   if (parsedId != null && loading) {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <ActivityIndicator size="large" color={tintColor} />
+        <ActivityIndicator size="large" color={colors.tint} />
       </View>
     );
   }

@@ -1,32 +1,35 @@
 // app/_layout.tsx
-import { useColorScheme } from "@/hooks/use-color-scheme";
-import { useColors } from "@/hooks/use-colors";
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
+import React, { useEffect } from "react";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import Toast from "react-native-toast-message";
 import { NetworkProvider } from "@/context/NetworkContext";
-import { OfflineIcon } from "@/components/offline-icon";
 import { FirebaseDataProvider } from "@/context/FirebaseDataContex";
+import { OfflineIcon } from "@/components/offline-icon";
 import { useAuth } from "@/hooks/use-auth";
-import { useEffect } from "react";
-import { SplashScreen } from "@/components/views/splash-screen"; // Import splash screen
+import { SplashScreen } from "@/components/views/splash-screen";
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
+import { ThemeProvider, useTheme } from "@/context/ThemeContext";
+import { DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider } from "@react-navigation/native";
+
+export default function RootLayoutWrapper() {
+  // Opakowujemy całą aplikację w Twój ThemeProvider
+  return (
+    <ThemeProvider>
+      <RootLayout />
+    </ThemeProvider>
+  );
+}
+
+function RootLayout() {
+  const { themePreference } = useTheme(); // Pobieramy motyw z ThemeContext
   const { user, isLoading } = useAuth();
   const router = useRouter();
   const segments = useSegments();
-  const colors = useColors();
 
+  // Logika routingu
   useEffect(() => {
-    if (isLoading) {
-      return;
-    }
+    if (isLoading) return;
 
     const isOnLoginScreen =
       segments[0] === "(screens)" && segments[1] === "loginScreen";
@@ -38,16 +41,17 @@ export default function RootLayout() {
     }
   }, [user, isLoading, segments]);
 
-  // Pokaż Splash Screen podczas ładowania
-  if (isLoading) {
-    return <SplashScreen />;
-  }
+  // Pokaż SplashScreen podczas ładowania
+  if (isLoading) return <SplashScreen />;
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+    <NavigationThemeProvider
+      value={themePreference === "dark" ? DarkTheme : DefaultTheme}
+    >
       <NetworkProvider>
         <FirebaseDataProvider>
           <OfflineIcon />
+
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="(screens)" options={{ headerShown: false }} />
@@ -56,10 +60,11 @@ export default function RootLayout() {
               options={{ headerShown: false, presentation: "modal" }}
             />
           </Stack>
+
           <StatusBar style="auto" />
           <Toast />
         </FirebaseDataProvider>
       </NetworkProvider>
-    </ThemeProvider>
+    </NavigationThemeProvider>
   );
 }
