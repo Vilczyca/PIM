@@ -4,6 +4,7 @@ import {
   addDoc,
   collection,
   deleteField,
+    deleteDoc,
   doc,
   getDocs,
   setDoc,
@@ -164,4 +165,12 @@ export const getCurrentUserData = () => {
     name: user.displayName || "",
     email: user.email || "",
   };
+};
+
+export const deleteMyHomie = async (id: string) => {
+    try {
+        await deleteDoc(doc(db, "calendar_data", id));
+    } catch (e) {
+        console.log("deleteMyHomie error", e);
+    }
 };

@@ -86,30 +86,39 @@ const sections = useMemo(() => {
 
  return (
     <View style={[styles.container, { backgroundColor:  colors.background }]}>
-      <SectionList
-        sections={sections}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{ padding: 16 }}
-        renderItem={({ item }) => (
-          <BdayCard
-            id={item.id}
-            name={item.name}
-            birthday={item.date}
-            avatar={item.avatar}
-            showDaysLeft={true}
-            isBirthdayToday={daysUntilBirthday(item.date ?? "") === 0}
-            backgroundColor={colors.card} 
-            textColor={colors.text}       
+        <SectionList
+            sections={sections}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={{ padding: 16, flexGrow: 1 }}
+            renderItem={({ item }) => (
+                <BdayCard
+                    id={item.id}
+                    name={item.name}
+                    birthday={item.date}
+                    avatar={item.avatar}
+                    showDaysLeft={true}
+                    isBirthdayToday={daysUntilBirthday(item.date ?? "") === 0}
+                    backgroundColor={colors.card}
+                    textColor={colors.text}
+                    onPress={() => handlePress(item.id)}
+                />
+            )}
+            renderSectionHeader={({ section: { title } }) => (
+                <Text style={[styles.header, { color: colors.text }]}>{title}</Text>
+            )}
 
-            onPress={() => handlePress(item.id)}
-          />
-        )}
-        renderSectionHeader={({ section: { title } }) => (
-          <Text style={[styles.header, { color: colors.text }]}>{title}</Text>
-        )}
-      />
+            //test
+            ListEmptyComponent={
+                <View style={{ alignItems: "center", marginTop: 40 }}>
+                    <Text style={[styles.header, { color: colors.text }]}>
+                        No birthdays yet
+                    </Text>
+                </View>
+            }
+        />
 
-      <AddBdayButton />
+
+        <AddBdayButton />
     </View>
   );
 }

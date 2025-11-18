@@ -1,4 +1,4 @@
-import { updateMyHomie } from "@/components/database";
+import { updateMyHomie, deleteMyHomie } from "@/components/database";
 import { DetailsView } from "@/components/views/details-view";
 import { CalendarRecord } from "@/constants/types";
 import { useFirebaseData } from "@/context/FirebaseDataContex";
@@ -7,8 +7,9 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { ActivityIndicator, TouchableOpacity, View, Text } from "react-native";
+import {ActivityIndicator, TouchableOpacity, View, Text, Alert} from "react-native";
 import {OpenInGoogleCalendar} from "@/components/open-in-google-calendar";
+
 
 export default function DetailsScreen() {
   const { id } = useLocalSearchParams();
@@ -85,15 +86,16 @@ const [dataCopy, setDataCopy] = useState<CalendarRecord | undefined>(
           </View>
       ),
         headerLeft: () => (
-            <View style={{ flexDirection: "row", width: 68}}>
-                <TouchableOpacity
-                    onPress={() => navigation.goBack()}
-                    style={{ marginLeft: 16 }}
-                >
-                    {!isEditing && (
-                    <Ionicons name="arrow-back" size={24} color={colors.tint} />
-                        )}
-                </TouchableOpacity>
+            <View style={{ flexDirection: "row", width: 68 }}>
+                {isEditing ? (
+                    <TouchableOpacity onPress={handleDelete} style={{ marginLeft: 16 }}>
+                        <Feather name="trash-2" size={22} color={colors.tint} />
+                    </TouchableOpacity>
+                ) : (
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 16 }}>
+                        <Ionicons name="arrow-back" size={24} color={colors.tint} />
+                    </TouchableOpacity>
+                )}
             </View>
         ),
       gestureEnabled: !isEditing,
@@ -110,6 +112,26 @@ const [dataCopy, setDataCopy] = useState<CalendarRecord | undefined>(
       setInitialData(data);
       setMode("view");
   };
+
+    const handleDelete = () => {
+        if (!initialData) return;
+        Alert.alert(
+            "Delete",
+            "Are you sure you want to delete this birthday?",
+            [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: async () => {
+                        await deleteMyHomie(initialData.id);
+                        refresh();
+                        navigation.goBack();
+                    },
+                },
+            ]
+        );
+    };
 
 
   if (parsedId != null && loading) {
